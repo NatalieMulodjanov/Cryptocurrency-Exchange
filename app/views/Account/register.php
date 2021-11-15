@@ -1,6 +1,6 @@
 <html>
 <head><title>Register</title></head><body>
-<a href="<?=BASE?>/User/login">return</a><br>
+<a href="<?=BASE?>/Account/login">return</a><br>
 Register a new user
 <form action='' method='post'>
 	Username: <input type='text' name='username' /><br>
