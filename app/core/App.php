@@ -4,7 +4,7 @@ namespace app\core;
 
 class App{
 
-	private $controller = 'app\\controllers\\User'; 
+	private $controller = 'app\\controllers\\Account'; 
 	private $method = 'index';
 	private $params = [];
 
