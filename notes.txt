@@ -1,0 +1,11 @@
+coins to add to enum: 
+1. bitcoin 
+2. ethereum 
+3. SHIBA INU
+4. Dogecoin
+5. DogeElon Mars
+6. Litecoin
+7. Darkcoin
+8. EricsCoin 
+9. Solana
+10. Tether 
