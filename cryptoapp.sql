@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2021 at 01:49 AM
+-- Generation Time: Nov 16, 2021 at 02:03 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -32,7 +32,7 @@ USE `cryptoapp`;
 DROP TABLE IF EXISTS `account`;
 CREATE TABLE `account` (
   `account_id` int(5) NOT NULL,
-  `total_funds` decimal(9,0) NOT NULL,
+  `total_funds_CAD` decimal(9,2) NOT NULL,
   `referral_code` varchar(25) NOT NULL,
   `user_id` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
