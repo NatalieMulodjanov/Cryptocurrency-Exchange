@@ -15,4 +15,15 @@ class User extends \app\core\Model{
     public function __construct(){
         parent::__construct();
     }
+
+  
+
+    //get user by user id
+    public function getUserById($user_id){
+        $SQL = "SELECT * FROM user WHERE user_id = :user_id";
+        $STMT = self::$_connection->prepare($SQL);
+        $STMT->execute(['user_id' => $user_id]);
+        $STMT->setFetchMode(\PDO::FETCH_CLASS, 'app\models\User');
+        return $STMT->fetch();
+    }
 }
