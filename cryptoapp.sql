@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2021 at 02:03 AM
+-- Generation Time: Nov 22, 2021 at 05:17 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -88,6 +88,7 @@ CREATE TABLE `transaction` (
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `user_id` int(5) NOT NULL,
+  `username` varchar(50) NOT NULL,
   `password_hash` varchar(72) NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
