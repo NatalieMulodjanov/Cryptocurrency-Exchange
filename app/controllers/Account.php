@@ -5,7 +5,7 @@ namespace app\controllers;
 class Account extends \app\core\Controller
 {
 
-    public function ndex(){
+    public function index(){
         $this->view->render('account/index');
     }
 
@@ -16,8 +16,9 @@ class Account extends \app\core\Controller
             $account = new \app\models\Account();
             $account = $account->getAccountById($_SESSION['account_id']);
             $account->addFunds($amount);
+            echo "funds added successfully";
         } else {
-            $_SESSION['account'] = 1;
+            $_SESSION['account_id'] = 1;
             $this->view('Account/addFunds');
         }
         
