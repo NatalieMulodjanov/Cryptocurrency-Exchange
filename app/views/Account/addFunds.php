@@ -13,7 +13,7 @@
         
         <form method="post">
             <label>Amount</label>
-            <input type="text" name="amount" />CAD
+            <input type="text" name="amount"/>CAD
             <input type="submit" name = "action" value="Add Funds" />
         </form>
     </body>
