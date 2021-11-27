@@ -4,7 +4,6 @@ namespace app\models;
 
 class User extends \app\core\Model{
     public $user_id;
-    public $username;
     public $password;
     public $password_hash;
     public $first_name;
@@ -33,19 +32,20 @@ class User extends \app\core\Model{
         $STMT = self::$_connection->prepare($SQL);
         $STMT->execute(['first_name' => $this->first_name, 'last_name' => $this->last_name, 'dob' => $this->dob, 'email' => $this->email, 'user_id' => $this->user_id]);
     }
-    public function get($username){
-		$SQL = 'SELECT * FROM user WHERE username = :username';
+
+    public function getUserByemail($email){
+		$SQL = 'SELECT * FROM user WHERE email = :email';
 		$STMT = self::$_connection->prepare($SQL);
-		$STMT->execute(['username'=>$username]);
+		$STMT->execute(['email'=>$email]);
 		$STMT->setFetchMode(\PDO::FETCH_CLASS,'app\\models\\User');
 		return $STMT->fetch();
 	}
 
     public function insert(){
 		$this->password_hash = password_hash($this->password, PASSWORD_DEFAULT);
-		$SQL = 'INSERT INTO user(username, password_hash) VALUES (:username, :password_hash)';
+		$SQL = 'INSERT INTO user(password_hash, first_name, last_name, dob, email) VALUES (:password_hash, :first_name, :last_name, :dob, :email)';
 		$STMT = self::$_connection->prepare($SQL);
-		$STMT->execute(['username'=>$this->username,'password_hash'=>$this->password_hash]);
+		$STMT->execute(['password_hash'=>$this->password_hash, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'dob' => $this->dob, 'email' => $this->email]);
 	}
 
 	public function delete($user_id){

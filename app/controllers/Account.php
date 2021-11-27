@@ -4,12 +4,10 @@ namespace app\controllers;
 
 class Account extends \app\core\Controller
 {
-
     public function index()
     {
-        $this->view->render('account/index');
+        $this->view('Account/home');
     }
-
     //method to add funds into account 
     public function addFunds()
     {

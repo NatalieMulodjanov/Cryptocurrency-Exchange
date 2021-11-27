@@ -5,7 +5,7 @@ class User extends \app\core\Controller
 {
     public function index()
     {
-       $this->view('Account/home');
+       $this->view('User/login');
     }
 
     public function settings()
@@ -13,10 +13,9 @@ class User extends \app\core\Controller
         $this->view('User/settings');
     }
 
-    //TODO: do not forget to change user id to session variable user id
     public function editPersonalInfo(){
         $user = new \app\models\User();
-        $user = $user->getUserById(1);
+        $user = $user->getUserById($_SESSION['user_id']);
         if (isset($_POST['action'])) {
             $user->first_name = $_POST['first_name'];
             $user->last_name = $_POST['last_name'];
@@ -33,10 +32,10 @@ class User extends \app\core\Controller
 	{
 		if (isset($_POST['action'])) {
 			$user = new \app\models\User();
-			$user = $user->get($_POST['username']);
+			$user = $user->getUserByEmail($_POST['email']);
 			if ($user != false && password_verify($_POST['password'], $user->password_hash)) {
 				$_SESSION['user_id'] = $user->user_id;
-				$_SESSION['username'] = $user->username;
+				$_SESSION['email'] = $user->email;
 				header('location:' . BASE . 'Account/index');
 			} else {
 				$this->view('User/login', 'Wrong username and password combination!');
@@ -49,8 +48,11 @@ class User extends \app\core\Controller
 	{
 		if (isset($_POST['action']) && $_POST['password'] == $_POST['password_confirm']) {
 			$user = new \app\models\User();
-			if ($user->get($_POST['username']) == false) {
-				$user->username = $_POST['username'];
+			if ($user->getUserByEmail($_POST['email']) == false) {
+				$user->first_name = $_POST['first_name'];
+				$user->last_name = $_POST['last_name'];
+				$user->dob = $_POST['dob'];
+				$user->email = $_POST['email'];
 				$user->password = $_POST['password'];
 				$user->insert();
 				header('location:' . BASE . 'User/login');
