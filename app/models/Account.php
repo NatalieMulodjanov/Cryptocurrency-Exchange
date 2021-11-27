@@ -17,17 +17,17 @@ class Account extends \app\core\Model
     // add funds to wallet
     public function addFunds($amount)
     {
-        $SQL = "UPDATE TABLE account SET total_funds_CAD += CONVERT(INT, :amount) WHERE account_id = :account_id";
+        $SQL = "UPDATE account SET total_funds_CAD = CONVERT(:total_funds_CAD, DECIMAL) + CONVERT(:amount ,DECIMAL) WHERE account_id = :account_id";
         $STMT = self::$_connection->prepare($SQL);
-        $STMT->execute(['amount' => $amount, 'account_id' => $this->account_id]);
+        $STMT->execute(['total_funds_CAD' => $this->total_funds_CAD , 'amount' => $amount, 'account_id' => $this->account_id]);
     }
 
     // remove funds from wallet
     public function removeFunds($amount)
     {
-        $SQL = "UPDATE TABLE account SET total_funds_CAD -= :amount";
+        $SQL = "UPDATE account SET total_funds_CAD = CONVERT(:total_funds_CAD, DECIMAL) - CONVERT(:amount, DECIMAL) WHERE account_id = :account_id";
         $STMT = self::$_connection->prepare($SQL);
-        $STMT->execute(['amount' => $amount]);
+        $STMT->execute(['total_funds_CAD' => $this->total_funds_CAD , 'amount' => $amount, 'account_id' => $this->account_id]);
     }
 
     //get account by account id

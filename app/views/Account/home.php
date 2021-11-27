@@ -4,14 +4,15 @@
 </head>
 
     <body>
-        <h1>Welcome <?= $user->name ?></h1>
+        <h1>Welcome </h1>
         
         <div>
             <label>Total Balance</label>
             <label>$ <? ?> CAD</label>
         </div>
 
-        <a href = "<?=BASE?>/User/addFunds">Add Funds</a>
-        <a href = "<?=BASE?>/User/removeFunds">Remove Funds</a>
+        <a href = "<?=BASE?>/Account/addFunds">Add Funds</a>
+        <a href = "<?=BASE?>/Account/removeFunds">Remove Funds</a>
+        <a href = "<?=BASE?>/User/settings">Settings</a>
     </body>
 </html>
