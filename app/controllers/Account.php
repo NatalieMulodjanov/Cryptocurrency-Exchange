@@ -2,11 +2,33 @@
 
 namespace app\controllers;
 
+use app\models\Cryptocurrency;
+
 class Account extends \app\core\Controller
 {
     public function index()
     {
-        $this->view('Account/home');
+        $cryptoModel = new \app\models\Cryptocurrency();
+        $cryptos = $cryptoModel->getAllCurrencyExchangeRates();
+        $cryptoAPI = [];
+        foreach($cryptos as $crypto){
+            $baseObject = $crypto['Realtime Currency Exchange Rate'];
+            $crypto_code = $baseObject["1. From_Currency Code"];
+            $crypto_name = $baseObject["2. From_Currency Name"];
+            $exchange_rate_cad = $baseObject["5. Exchange Rate"];
+            $last_refreshed = $baseObject["6. Last Refreshed"];
+            $cryptoAPI[] = [
+                'code' => $crypto_code,
+                'name' => $crypto_name,
+                'rate' => $exchange_rate_cad,
+                'last_refreshed' => $last_refreshed
+            ];
+        }
+
+        var_dump($cryptoAPI);
+
+        
+        $this->view('Account/home', $cryptoAPI);
     }
     //method to add funds into account 
     public function addFunds()
