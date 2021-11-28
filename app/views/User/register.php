@@ -6,7 +6,15 @@
 
 <body>
 	<a href="<?= BASE ?>/Account/login">return</a><br>
-	Register a new user
+	Register a new user <br>
+
+	<?php 
+		if (isset($data['error'])) {
+			echo $data['error'];
+		}
+	
+	?>
+		
 	<form action='' method='post'>
 		First name: <input type='text' name='first_name' /><br>
 		Last name: <input type='text' name='last_name' /><br>
