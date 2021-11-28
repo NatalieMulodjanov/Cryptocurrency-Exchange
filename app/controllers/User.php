@@ -3,9 +3,10 @@ namespace app\controllers;
 
 class User extends \app\core\Controller
 {
+	#[\app\filters\Login]
     public function index()
     {
-       $this->view('User/login');
+       header('Location:' . BASE . '/Account/home');
     }
 
     public function settings()
@@ -33,6 +34,7 @@ class User extends \app\core\Controller
 		if (isset($_POST['action'])) {
 			$user = new \app\models\User();
 			$user = $user->getUserByEmail($_POST['email']);
+			var_dump($user);
 			if ($user != false && password_verify($_POST['password'], $user->password_hash)) {
 				$_SESSION['user_id'] = $user->user_id;
 				$_SESSION['email'] = $user->email;
@@ -56,6 +58,8 @@ class User extends \app\core\Controller
 				$user->password = $_POST['password'];
 				$user->insert();
 				header('location:' . BASE . 'User/login');
+			} else {
+				$this->view('User/register', ['error' =>'Email already exists!']);
 			}
 		} else
 			$this->view('User/register');
