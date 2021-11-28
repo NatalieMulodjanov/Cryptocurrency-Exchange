@@ -46,7 +46,7 @@ class User extends \app\core\Model{
 		$SQL = 'INSERT INTO user(password_hash, first_name, last_name, dob, email) VALUES (:password_hash, :first_name, :last_name, :dob, :email)';
 		$STMT = self::$_connection->prepare($SQL);
 		$STMT->execute(['password_hash'=>$this->password_hash, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'dob' => $this->dob, 'email' => $this->email]);
-	}
+    }
 
 	public function delete($user_id){
 		$SQL = 'DELETE FROM `user` WHERE user_id = :user_id';
