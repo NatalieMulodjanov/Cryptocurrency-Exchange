@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 22, 2021 at 05:31 PM
+-- Generation Time: Nov 29, 2021 at 09:08 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -37,6 +37,13 @@ CREATE TABLE `account` (
   `user_id` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `account`
+--
+
+INSERT INTO `account` (`account_id`, `total_funds_CAD`, `referral_code`, `user_id`) VALUES
+(1, '301.00', '123', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -47,8 +54,18 @@ DROP TABLE IF EXISTS `cryptocurrency`;
 CREATE TABLE `cryptocurrency` (
   `crypto_id` int(5) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `value` double(7,2) NOT NULL
+  `code` varchar(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `cryptocurrency`
+--
+
+INSERT INTO `cryptocurrency` (`crypto_id`, `name`, `code`) VALUES
+(1, 'Bitcoin', 'BTC'),
+(2, 'Ethereum', 'ETH'),
+(5, 'Shiba Inu', 'SHIB'),
+(6, 'DogeCoin', 'DOGE');
 
 -- --------------------------------------------------------
 
@@ -58,7 +75,7 @@ CREATE TABLE `cryptocurrency` (
 
 DROP TABLE IF EXISTS `crypto_status`;
 CREATE TABLE `crypto_status` (
-  `account_id` int(5) NOT NULL,
+  `user_id` int(5) NOT NULL,
   `crypto_id` int(5) NOT NULL,
   `status` enum('favorite','blacklist') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -88,7 +105,6 @@ CREATE TABLE `transaction` (
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `user_id` int(5) NOT NULL,
-  `username` varchar(50) NOT NULL,
   `password_hash` varchar(72) NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
@@ -102,8 +118,11 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `username`, `password_hash`, `first_name`, `last_name`, `dob`, `two_factor_authentication_token`, `email`, `isAdmin`) VALUES
-(1, '123', '$2y$10$WsiU2ayRInPMwVgElMMw8upKdv2nShZ9VO4utNZ0lBK5/zPOSEXdy', '', '', '0000-00-00', '', '', 0);
+INSERT INTO `user` (`user_id`, `password_hash`, `first_name`, `last_name`, `dob`, `two_factor_authentication_token`, `email`, `isAdmin`) VALUES
+(1, '1234', 'sfgd', 'dfdf', '0000-00-00', '123', 'blah@email', 0),
+(3, '$2y$10$5Fj6jZg0aKYx/voKbODPTenwf1LCg.VuDZKgrbnhsVCeJ8k2gINyy', 'dvb', 'dfbv', '0000-00-00', '', 'test', 0),
+(4, '$2y$10$89ar3HWzpxrnhaIFY0wG2OmtB1E3gpwtRf/B.IChaMDFsH95Wz78W', 'test', 'test', '0000-00-00', '', 'test@gmail.com', 0),
+(5, '$2y$10$ATL0BrK6UQ0YFuoBHVNT7eA7fTVmXaQI6PGLcgLNNpED/fywD15by', 'Natalie', 'Mulodjanov', '0000-00-00', '', 'ntaliemulodjanov@gmail.com', 0);
 
 -- --------------------------------------------------------
 
@@ -113,7 +132,7 @@ INSERT INTO `user` (`user_id`, `username`, `password_hash`, `first_name`, `last_
 
 DROP TABLE IF EXISTS `wallet`;
 CREATE TABLE `wallet` (
-  `account_id` int(5) NOT NULL,
+  `user_id` int(5) NOT NULL,
   `crypto_id` int(5) NOT NULL,
   `amount` decimal(9,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -140,7 +159,7 @@ ALTER TABLE `cryptocurrency`
 --
 ALTER TABLE `crypto_status`
   ADD KEY `crypto_status_crypto_id_fk` (`crypto_id`),
-  ADD KEY `crypto_status_user_id_fk` (`account_id`);
+  ADD KEY `crypto_status_user_id_fk` (`user_id`);
 
 --
 -- Indexes for table `transaction`
@@ -160,7 +179,7 @@ ALTER TABLE `user`
 -- Indexes for table `wallet`
 --
 ALTER TABLE `wallet`
-  ADD KEY `wallet_user_id_fk` (`account_id`),
+  ADD KEY `wallet_user_id_fk` (`user_id`),
   ADD KEY `wallet_crypto_id_fk` (`crypto_id`);
 
 --
@@ -171,13 +190,13 @@ ALTER TABLE `wallet`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `account_id` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `account_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `cryptocurrency`
 --
 ALTER TABLE `cryptocurrency`
-  MODIFY `crypto_id` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `crypto_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `transaction`
@@ -189,7 +208,7 @@ ALTER TABLE `transaction`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
@@ -205,8 +224,8 @@ ALTER TABLE `account`
 -- Constraints for table `crypto_status`
 --
 ALTER TABLE `crypto_status`
-  ADD CONSTRAINT `crypto_status_account_id_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `crypto_status_crypto_id_fk` FOREIGN KEY (`crypto_id`) REFERENCES `cryptocurrency` (`crypto_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `crypto_status_crypto_id_fk` FOREIGN KEY (`crypto_id`) REFERENCES `cryptocurrency` (`crypto_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `crypto_status_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `transaction`
@@ -219,8 +238,8 @@ ALTER TABLE `transaction`
 -- Constraints for table `wallet`
 --
 ALTER TABLE `wallet`
-  ADD CONSTRAINT `wallet_account_id_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `wallet_crypto_id_fk` FOREIGN KEY (`crypto_id`) REFERENCES `cryptocurrency` (`crypto_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `wallet_crypto_id_fk` FOREIGN KEY (`crypto_id`) REFERENCES `cryptocurrency` (`crypto_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `wallet_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
