@@ -50,6 +50,7 @@ class User extends \app\core\Controller
 	{
 		if (isset($_POST['action']) && $_POST['password'] == $_POST['password_confirm']) {
 			$user = new \app\models\User();
+			$account = new \app\models\Account();
 			if ($user->getUserByEmail($_POST['email']) == false) {
 				$user->first_name = $_POST['first_name'];
 				$user->last_name = $_POST['last_name'];
@@ -57,6 +58,9 @@ class User extends \app\core\Controller
 				$user->email = $_POST['email'];
 				$user->password = $_POST['password'];
 				$user->insert();
+
+
+
 				header('location:' . BASE . 'User/login');
 			} else {
 				$this->view('User/register', ['error' =>'Email already exists!']);

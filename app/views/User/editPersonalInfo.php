@@ -4,6 +4,8 @@
 </head>
 
     <body>
+        <a href="<?=BASE?>/User/settings">return</a>
+
         <h1>Edit Personal Info</h1>
         
         <form method="post">

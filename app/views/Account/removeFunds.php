@@ -4,6 +4,8 @@
     </head>
     
     <body>
+        <a href="<?=BASE?>/Account/index">return</a>
+
         <h1>Remove Funds</h1>
         
         <div>

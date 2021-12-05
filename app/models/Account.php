@@ -39,4 +39,16 @@ class Account extends \app\core\Model
         $STMT->setFetchMode(\PDO::FETCH_CLASS, 'app\models\Account');
         return $STMT->fetch();
     }
+
+    public function insert(){
+		$SQL = 'INSERT INTO user(password_hash, first_name, last_name, dob, email) VALUES (:password_hash, :first_name, :last_name, :dob, :email)';
+		$STMT = self::$_connection->prepare($SQL);
+		$STMT->execute(['password_hash'=>$this->password_hash, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'dob' => $this->dob, 'email' => $this->email]);
+    }
+
+	public function delete($user_id){
+		$SQL = 'DELETE FROM `account` WHERE user_id = :user_id';
+		$STMT = self::$_connection->prepare($SQL);
+		$STMT->execute(['user_id'=>$user_id]);
+	}
 }
