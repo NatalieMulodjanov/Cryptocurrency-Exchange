@@ -31,5 +31,6 @@
         <a href = "<?=BASE?>/Account/addFunds">Add Funds</a>
         <a href = "<?=BASE?>/Account/removeFunds">Remove Funds</a>
         <a href = "<?=BASE?>/User/settings">Settings</a>
+        <a href="<?= BASE ?>/User/logout">Logout</a>
     </body>
 </html>
