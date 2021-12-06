@@ -53,4 +53,13 @@ class User extends \app\core\Model{
 		$STMT = self::$_connection->prepare($SQL);
 		$STMT->execute(['user_id'=>$user_id]);
 	}
+
+    //get account id by user id
+    public function getAccountByUserId($user_id){
+        $SQL = "SELECT account_id FROM account WHERE user_id = :user_id";
+        $STMT = self::$_connection->prepare($SQL);
+        $STMT->execute(['user_id' => $user_id]);
+        $STMT->setFetchMode(\PDO::FETCH_CLASS, 'app\models\Account');
+        return $STMT->fetch();
+    }
 }

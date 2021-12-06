@@ -4,11 +4,15 @@
 </head>
 
     <body>
-        <h1>Welcome </h1>
+        <h1>Welcome  
+            <?php echo $data['user_First_name'] ?>
+            <?php echo $data['user_Last_name'] ?>
+            
+        </h1>
         
         <div>
             <label>Total Balance</label>
-            <label>$ <? ?> CAD</label>
+            <label><?php echo $data['total_funds_CAD'] ?> CAD</label>
         </div>
 
         <table>
@@ -18,14 +22,15 @@
                 <th>Rate</th>
                 <th>Last refreshed</th>
             </tr>
-            <?php foreach ($data as $crypto) : ?>
+            <?php foreach ($data['cryptoAPI'] as $cryptoKey => $cryptoValue) : ?>
                 <tr>
-                    <td><?= $crypto['code'] ?></td>
-                    <td><?= $crypto['name']?></td>
-                    <td><?= $crypto['rate'] ?></td>
-                    <td><?= $crypto['last_refreshed'] ?></td>
+                    <td><?= $cryptoKey ?></td>
+                    <td><?= $cryptoValue['name']?></td>
+                    <td><?= $cryptoValue['rate'] ?></td>
+                    <td><?= $cryptoValue['last_refreshed'] ?></td>
+                    <td><a href="<?=BASE?>/Account/buyCrypto">Buy <?= $cryptoValue['name']?></a></td>
                 </tr>
-            <?php endforeach; ?>
+            <?php endforeach; ?>  
         </table>
 
         <a href = "<?=BASE?>/Account/addFunds">Add Funds</a>

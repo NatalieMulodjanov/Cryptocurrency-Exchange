@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 29, 2021 at 09:08 PM
+-- Generation Time: Dec 02, 2021 at 04:50 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -42,7 +42,7 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`account_id`, `total_funds_CAD`, `referral_code`, `user_id`) VALUES
-(1, '301.00', '123', 1);
+(2, '100.00', '0000', 7);
 
 -- --------------------------------------------------------
 
@@ -119,10 +119,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `password_hash`, `first_name`, `last_name`, `dob`, `two_factor_authentication_token`, `email`, `isAdmin`) VALUES
-(1, '1234', 'sfgd', 'dfdf', '0000-00-00', '123', 'blah@email', 0),
-(3, '$2y$10$5Fj6jZg0aKYx/voKbODPTenwf1LCg.VuDZKgrbnhsVCeJ8k2gINyy', 'dvb', 'dfbv', '0000-00-00', '', 'test', 0),
-(4, '$2y$10$89ar3HWzpxrnhaIFY0wG2OmtB1E3gpwtRf/B.IChaMDFsH95Wz78W', 'test', 'test', '0000-00-00', '', 'test@gmail.com', 0),
-(5, '$2y$10$ATL0BrK6UQ0YFuoBHVNT7eA7fTVmXaQI6PGLcgLNNpED/fywD15by', 'Natalie', 'Mulodjanov', '0000-00-00', '', 'ntaliemulodjanov@gmail.com', 0);
+(7, '$2y$10$H1DrJog8D9HNjjYKyK9ZEuDWxTslwRsyEsRdwCtPzDI9/AD0EGh8y', 'Natalie', 'Mulodjanov', '0000-00-00', '', 'ntaliemulodjanov@gmail.com', 0);
 
 -- --------------------------------------------------------
 
@@ -132,7 +129,7 @@ INSERT INTO `user` (`user_id`, `password_hash`, `first_name`, `last_name`, `dob`
 
 DROP TABLE IF EXISTS `wallet`;
 CREATE TABLE `wallet` (
-  `user_id` int(5) NOT NULL,
+  `account_id` int(5) NOT NULL,
   `crypto_id` int(5) NOT NULL,
   `amount` decimal(9,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -179,8 +176,8 @@ ALTER TABLE `user`
 -- Indexes for table `wallet`
 --
 ALTER TABLE `wallet`
-  ADD KEY `wallet_user_id_fk` (`user_id`),
-  ADD KEY `wallet_crypto_id_fk` (`crypto_id`);
+  ADD KEY `wallet_crypto_id_fk` (`crypto_id`),
+  ADD KEY `wallet_account_id_fk` (`account_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -190,7 +187,7 @@ ALTER TABLE `wallet`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `account_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `account_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `cryptocurrency`
@@ -208,7 +205,7 @@ ALTER TABLE `transaction`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `user_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -238,8 +235,9 @@ ALTER TABLE `transaction`
 -- Constraints for table `wallet`
 --
 ALTER TABLE `wallet`
+  ADD CONSTRAINT `wallet_account_id_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   ADD CONSTRAINT `wallet_crypto_id_fk` FOREIGN KEY (`crypto_id`) REFERENCES `cryptocurrency` (`crypto_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `wallet_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `wallet_user_id_fk` FOREIGN KEY (`account_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

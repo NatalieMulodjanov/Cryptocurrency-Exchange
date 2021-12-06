@@ -38,6 +38,7 @@ class User extends \app\core\Controller
 			if ($user != false && password_verify($_POST['password'], $user->password_hash)) {
 				$_SESSION['user_id'] = $user->user_id;
 				$_SESSION['email'] = $user->email;
+				$_SESSION['account_id'] = $user->getAccountByUserId($user->user_id)->account_id;
 				header('location:' . BASE . 'Account/index');
 			} else {
 				$this->view('User/login', 'Wrong username and password combination!');
@@ -50,6 +51,7 @@ class User extends \app\core\Controller
 	{
 		if (isset($_POST['action']) && $_POST['password'] == $_POST['password_confirm']) {
 			$user = new \app\models\User();
+			$account = new \app\models\Account();
 			if ($user->getUserByEmail($_POST['email']) == false) {
 				$user->first_name = $_POST['first_name'];
 				$user->last_name = $_POST['last_name'];
@@ -57,6 +59,13 @@ class User extends \app\core\Controller
 				$user->email = $_POST['email'];
 				$user->password = $_POST['password'];
 				$user->insert();
+				$user = $user->getUserByEmail($_POST['email']);
+				//TODO: get random refferal code 
+				$account->referral_code = '0000';
+				//TODO: total funds = 0 if not reffered, or 25 if reffered
+				$account->total_funds_CAD = 0;
+				$account->user_id = $user->user_id;
+				$account->insert();
 				header('location:' . BASE . 'User/login');
 			} else {
 				$this->view('User/register', ['error' =>'Email already exists!']);
