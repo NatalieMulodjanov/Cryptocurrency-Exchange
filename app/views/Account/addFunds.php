@@ -4,6 +4,8 @@
     </head>
     
     <body>
+        <a href="<?=BASE?>/Account/index">return</a>
+
         <h1>Add Funds</h1>
         
         <div>

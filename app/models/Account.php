@@ -57,4 +57,10 @@ class Account extends \app\core\Model
         $STMT = self::$_connection->prepare($SQL);
         $STMT->execute(['total_funds_CAD' => $this->total_funds_CAD, 'referral_code' => $this->referral_code, 'user_id' => $this->user_id]);
     }
+
+	public function delete($user_id){
+		$SQL = 'DELETE FROM `account` WHERE user_id = :user_id';
+		$STMT = self::$_connection->prepare($SQL);
+		$STMT->execute(['user_id'=>$user_id]);
+	}
 }
