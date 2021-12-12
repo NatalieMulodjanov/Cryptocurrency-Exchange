@@ -59,12 +59,24 @@ class User extends \app\core\Controller
 				$user->password = $_POST['password'];
 				$user->insert();
 				$user = $user->getUserByEmail($_POST['email']);
-				//TODO: get random refferal code 
-				$account->referral_code = '0000';
-				//TODO: total funds = 0 if not reffered, or 25 if reffered
+				$account->referral_code = random_int(1000, 9999);
+				$referral = $_POST['referral_code'];
+				$accounts = new \app\models\Account();
+				$accounts = $accounts->getAccounts();
+				$addFund = false;
+				foreach($accounts as $account2){
+					if($account2->referral_code == $referral){
+						$account2->addFunds(25);
+						$addFund = true;
+					}
+				}
 				$account->available_funds_CAD = 0;
 				$account->user_id = $user->user_id;
 				$account->insert();
+				//TODO fix add fund to created account
+				if($addFund){
+					$account->addFunds(25);
+				}
 				header('location:' . BASE . 'User/login');
 			} else {
 				$this->view('User/register', ['error' =>'Email already exists!']);
@@ -78,5 +90,12 @@ class User extends \app\core\Controller
 	{
 		session_destroy();
 		header('location:' . BASE . 'User/login');
+	}
+
+	//delete user
+	public function delete($user_id){
+		$user = new \app\models\User;
+		$user->delete($user_id);
+		header('location:' . BASE . 'Account/index');
 	}
 }

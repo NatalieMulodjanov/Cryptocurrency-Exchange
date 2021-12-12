@@ -41,6 +41,15 @@ class User extends \app\core\Model{
 		return $STMT->fetch();
 	}
 
+    //get all users
+    public function getUsers()
+    {
+        $SQL = "SELECT * FROM user";
+        $STMT = self::$_connection->query($SQL);
+        $STMT->setFetchMode(\PDO::FETCH_CLASS, 'app\models\User');
+        return $STMT->fetchAll();
+    }
+
     public function insert(){
 		$this->password_hash = password_hash($this->password, PASSWORD_DEFAULT);
 		$SQL = 'INSERT INTO user(password_hash, first_name, last_name, dob, email) VALUES (:password_hash, :first_name, :last_name, :dob, :email)';

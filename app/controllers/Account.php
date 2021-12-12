@@ -47,7 +47,14 @@ class Account extends \app\core\Controller
 
         //  var_dump($data);
 
-        $this->view('Account/home', $data);
+        if($user->isAdmin == 0){
+            $this->view('Account/home', $data);
+        }else{
+            $users = new \app\models\User();
+            $users = $users->getUsers();
+            $data = $users;
+            $this->view('Admin/home', $data);
+        }
     }
 
     //method to add funds into account 
@@ -268,5 +275,12 @@ class Account extends \app\core\Controller
         }
 
         header('Location:' . BASE . '/Account/deleteUser');
+    //get referral code from account
+    public function getReferral()
+    {
+        $account = new \app\models\Account();
+        $account = $account->getAccountById($_SESSION['account_id']);
+        $referral = $account->referral_code;
+        $this->view('Account/getReferral', $referral);
     }
 }
