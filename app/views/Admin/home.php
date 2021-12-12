@@ -4,11 +4,7 @@
 </head>
 
     <body>
-        <h1>Welcome  
-            <?php echo $data['user_First_name'] ?>
-            <?php echo $data['user_Last_name'] ?>
-            
-        </h1>
+        <h1>Welcome Admin</h1>
     
         <table>
             <tr>
@@ -17,12 +13,15 @@
                 <th>Rate</th>
                 <th>Last refreshed</th>
             </tr>
-            <?php foreach ($data['cryptoAPI'] as $cryptoKey => $cryptoValue) : ?>
+            <?php foreach ($data as $user) : ?>
                 <tr>
-                    <td><?= $cryptoKey ?></td>
-                    <td><?= $cryptoValue['name']?></td>
-                    <td><?= $cryptoValue['rate'] ?></td>
-                    <td><?= $cryptoValue['last_refreshed'] ?></td>
+                    <td><?= $user->first_name ?></td>
+                    <td><?= $user->last_name ?></td>
+                    <td><?= $user->dob ?></td>
+                    <td><?= $user->email ?></td>
+                    <td>
+                        <a href="<?=BASE?>/User/delete">delete</a>
+			        </td>
                     
                 </tr>
             <?php endforeach; ?>  
