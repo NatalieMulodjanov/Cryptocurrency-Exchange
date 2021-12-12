@@ -151,8 +151,12 @@ class Account extends \app\core\Controller
 
                 if ($wallet->getWalletByAccountIdAndCryptoCode($_SESSION['account_id'], $_POST['cryptos']) != null) {
                     $wallet->removeFromWallet();
+                    $currentWallet = $wallet->getWalletByAccountIdAndCryptoCode($_SESSION['account_id'], $_POST['cryptos']);
+                    if ($currentWallet->amount == 0) {
+                        $currentWallet->removeWallet();
+                    }
+
                     $account->addFunds($wallet->amount * $cryptoModel->exchange_rate);
-                    $wallet->amount *= -1;
                 } else {
                     echo "You cannot remove a coin that you dont own";
                 }
@@ -162,8 +166,8 @@ class Account extends \app\core\Controller
             $transaction = new \app\models\Transaction();
             $transaction->account_id = $_SESSION['account_id'];
             $transaction->crypto_code = $_POST['cryptos'];
-            $transaction->amount = $wallet->amount;
-            $transaction->total = $_POST['amount'];
+            $transaction->amount = $_POST['radio'] == "buy" ? $wallet->amount : $wallet->amount * -1;
+            $transaction->total = $_POST['radio'] == "buy" ? $_POST['amount'] * -1 : $_POST['amount'];
             $transaction->date_time = date('Y-m-d H:i:s');
             $transaction->insert();
 
@@ -173,5 +177,96 @@ class Account extends \app\core\Controller
 
             $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD]);
         }
+    }
+
+    //get all past transactions
+    public function getPastTransactions()
+    {
+        $transaction = new \app\models\Transaction();
+        $transactions = $transaction->getAllTransactionsByAccountId($_SESSION['account_id']);
+        $this->view('Account/viewPastTransaction', ['transactions' => $transactions]);
+    }
+
+    //delete user by account id 
+    public function deleteUser()
+    {
+
+        $account = new \app\models\Account();
+        $account = $account->getAccountById($_SESSION['account_id']);
+        $user = new \app\models\User();
+        $user = $user->getUserById($account->user_id);
+
+        $wallet = new \app\models\Wallet();
+        $wallets = $wallet->getWalletsByAccountId($_SESSION['account_id']);
+
+        $available_funds_CAD = $account->available_funds_CAD;
+
+        if (isset($_POST['action'])) {
+            if ($account->available_funds_CAD > 0) {
+                $error = "You cannot delete a user with available funds, make sure to deposit all your CAD";
+                $this->view('Account/deleteAccount', ['wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => $error]);
+                return;
+            }
+            if (isset($wallets) && $wallets != null) {
+                foreach ($wallets as $wallet) {
+                    if ($wallet->amount > 0) {
+                        $error = "You cannot delete before trading all cryptocurrencies to CAD, please click 'Trade all cryptocurrencies'";
+                        $this->view('Account/deleteAccount', ['wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => $error]);
+                        return;
+                    }
+                }
+            }
+            $user->delete();
+            header('Location:' . BASE . '/User/logout');
+        } else {
+            $this->view('Account/deleteAccount', ['wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD]);
+        }
+    }
+
+    //trade all coins to CAD
+    public function tradeAll()
+    {
+        $account = new \app\models\Account();
+        $account = $account->getAccountById($_SESSION['account_id']);
+        $wallet = new \app\models\Wallet();
+        $wallets = $wallet->getWalletsByAccountId($_SESSION['account_id']);
+        $cryptoModel = new \app\models\Cryptocurrency();
+        $transaction = new \app\models\Transaction();
+
+
+        foreach ($wallets as $wallet) {
+            if ($wallet->amount > 0) {
+                echo $wallet->amount;
+                $wallet->removeFromWallet();
+                $cryptoModel = $cryptoModel->getCryptocurrencyByCode($wallet->crypto_code);
+                $account->addFunds($wallet->amount * $cryptoModel->exchange_rate);
+                $wallet->removeWallet();
+                $transaction->account_id = $_SESSION['account_id'];
+                $transaction->crypto_code = $wallet->crypto_code;
+                $transaction->amount = $wallet->amount * -1;
+                $transaction->total = $wallet->amount * $cryptoModel->exchange_rate;
+                $transaction->date_time = date('Y-m-d H:i:s');
+                $transaction->insert();
+            }
+        }
+        header('Location:' . BASE . '/Account/deleteUser');
+    }
+
+    public function withdrawAll()
+    {
+        $account = new \app\models\Account();
+        $account = $account->getAccountById($_SESSION['account_id']);
+        if ($account->available_funds_CAD > 0) {
+            $account->removeFunds($account->available_funds_CAD);
+            $transaction = new \app\models\Transaction();
+            $transaction->account_id = $_SESSION['account_id'];
+            $transaction->crypto_code = null;
+            $transaction->amount = 0;
+            $transaction->total = $account->available_funds_CAD;
+            $transaction->date_time = date('Y-m-d H:i:s');
+            $transaction->insert();
+        }
+
+        header('Location:' . BASE . '/Account/deleteUser');
     }
 }

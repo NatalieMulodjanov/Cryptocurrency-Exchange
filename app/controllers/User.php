@@ -34,7 +34,6 @@ class User extends \app\core\Controller
 		if (isset($_POST['action'])) {
 			$user = new \app\models\User();
 			$user = $user->getUserByEmail($_POST['email']);
-			var_dump($user);
 			if ($user != false && password_verify($_POST['password'], $user->password_hash)) {
 				$_SESSION['user_id'] = $user->user_id;
 				$_SESSION['email'] = $user->email;

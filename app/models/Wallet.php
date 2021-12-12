@@ -35,6 +35,12 @@ class Wallet extends \app\core\Model
         $STMT->execute(['account_id' => $this->account_id,'crypto_code' => $this->crypto_code,'amount' => $this->amount]);
     }
 
+    public function removeWallet() {
+        $SQL = "DELETE FROM wallet WHERE account_id = :account_id AND crypto_code = :crypto_code";
+        $STMT = self::$_connection->prepare($SQL);
+        $STMT->execute(['account_id' => $this->account_id,'crypto_code' => $this->crypto_code]);
+    }
+
     //get all wallets by account id
     public function getWalletsByAccountId($account_id)
     {

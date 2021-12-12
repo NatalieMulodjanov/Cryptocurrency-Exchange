@@ -8,7 +8,8 @@
 
         <h1>Settings</h1>
         
-        <a href = "<?=BASE?>/User/editPersonalInfo">Edit personal info</a>
-      
+        <a href = "<?=BASE?>/User/editPersonalInfo">Edit personal info</a> <br>
+        <a href= "<?=BASE?>/Account/getPastTransactions">View all transactions</a> <br>
+        <a href="<?=BASE?>/Account/deleteUser">Delete my account</a>
     </body>
 </html>

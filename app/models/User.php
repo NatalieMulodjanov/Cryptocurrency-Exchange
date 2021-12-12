@@ -48,10 +48,12 @@ class User extends \app\core\Model{
 		$STMT->execute(['password_hash'=>$this->password_hash, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'dob' => $this->dob, 'email' => $this->email]);
     }
 
-	public function delete($user_id){
+    //delete user by account id
+	public function delete(){
 		$SQL = 'DELETE FROM `user` WHERE user_id = :user_id';
+        echo "lala".$this->user_id;
 		$STMT = self::$_connection->prepare($SQL);
-		$STMT->execute(['user_id'=>$user_id]);
+		var_dump($STMT->execute(['user_id'=>$this->user_id]));
 	}
 
     //get account id by user id

@@ -17,9 +17,9 @@ class Account extends \app\core\Model
     // add funds to wallet
     public function addFunds($amount)
     {
-        $SQL = "UPDATE account SET available_funds_CAD = CONVERT(:available_funds_CAD, DECIMAL) + CONVERT(:amount ,DECIMAL) WHERE account_id = :account_id";
+        $SQL = "UPDATE account SET available_funds_CAD = CONVERT(available_funds_CAD, DECIMAL) + CONVERT(:amount ,DECIMAL) WHERE account_id = :account_id";
         $STMT = self::$_connection->prepare($SQL);
-        $STMT->execute(['available_funds_CAD' => $this->available_funds_CAD , 'amount' => $amount, 'account_id' => $this->account_id]);
+        $STMT->execute(['amount' => $amount, 'account_id' => $this->account_id]);
     }
 
     // remove funds from cad
@@ -58,9 +58,5 @@ class Account extends \app\core\Model
         $STMT->execute(['available_funds_CAD' => $this->available_funds_CAD, 'referral_code' => $this->referral_code, 'user_id' => $this->user_id]);
     }
 
-	public function delete($user_id){
-		$SQL = 'DELETE FROM `account` WHERE user_id = :user_id';
-		$STMT = self::$_connection->prepare($SQL);
-		$STMT->execute(['user_id'=>$user_id]);
-	}
+	
 }
