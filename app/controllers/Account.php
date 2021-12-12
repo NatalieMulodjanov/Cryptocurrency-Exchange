@@ -174,4 +174,13 @@ class Account extends \app\core\Controller
             $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD]);
         }
     }
+
+    //get referral code from account
+    public function getReferral()
+    {
+        $account = new \app\models\Account();
+        $account = $account->getAccountById($_SESSION['account_id']);
+        $referral = $account->referral_code;
+        $this->view('Account/getReferral', $referral);
+    }
 }
