@@ -275,6 +275,8 @@ class Account extends \app\core\Controller
         }
 
         header('Location:' . BASE . '/Account/deleteUser');
+    }
+    
     //get referral code from account
     public function getReferral()
     {
