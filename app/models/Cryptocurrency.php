@@ -91,4 +91,13 @@ class Cryptocurrency extends \app\core\Model
         $result = $STMT->fetch();
         return $result;
     }
+
+    public function getCryptocurrencyByCode($crypto_code){
+        $SQL = "SELECT * FROM cryptocurrency WHERE code = :crypto_code";
+        $STMT = self::$_connection->prepare($SQL);
+        $STMT->execute(['crypto_code' => $crypto_code]);
+        $STMT->setFetchMode(\PDO::FETCH_CLASS, 'app\models\Cryptocurrency');
+        $result = $STMT->fetch();
+        return $result;
+    }
 }
