@@ -50,6 +50,15 @@ class Account extends \app\core\Model
         return $STMT->fetch();
     }
 
+    //get all accounts
+    public function getAccounts()
+    {
+        $SQL = "SELECT * FROM account";
+        $STMT = self::$_connection->query($SQL);
+        $STMT->setFetchMode(\PDO::FETCH_CLASS, 'app\models\Account');
+        return $STMT->fetchAll();
+    }
+
     //insert into account
     public function insert()
     {
