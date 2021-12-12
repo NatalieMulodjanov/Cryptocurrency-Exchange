@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 02, 2021 at 04:50 AM
+-- Generation Time: Dec 12, 2021 at 01:22 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -32,7 +32,7 @@ USE `cryptoapp`;
 DROP TABLE IF EXISTS `account`;
 CREATE TABLE `account` (
   `account_id` int(5) NOT NULL,
-  `total_funds_CAD` decimal(9,2) NOT NULL,
+  `available_funds_CAD` decimal(9,2) NOT NULL,
   `referral_code` varchar(25) NOT NULL,
   `user_id` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -41,8 +41,9 @@ CREATE TABLE `account` (
 -- Dumping data for table `account`
 --
 
-INSERT INTO `account` (`account_id`, `total_funds_CAD`, `referral_code`, `user_id`) VALUES
-(2, '100.00', '0000', 7);
+INSERT INTO `account` (`account_id`, `available_funds_CAD`, `referral_code`, `user_id`) VALUES
+(2, '724000.00', '0000', 7),
+(3, '-9999999.99', '0000', 8);
 
 -- --------------------------------------------------------
 
@@ -54,18 +55,19 @@ DROP TABLE IF EXISTS `cryptocurrency`;
 CREATE TABLE `cryptocurrency` (
   `crypto_id` int(5) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `code` varchar(5) NOT NULL
+  `code` varchar(5) NOT NULL,
+  `exchange_rate` decimal(10,0) NOT NULL,
+  `last_refreshed` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `cryptocurrency`
 --
 
-INSERT INTO `cryptocurrency` (`crypto_id`, `name`, `code`) VALUES
-(1, 'Bitcoin', 'BTC'),
-(2, 'Ethereum', 'ETH'),
-(5, 'Shiba Inu', 'SHIB'),
-(6, 'DogeCoin', 'DOGE');
+INSERT INTO `cryptocurrency` (`crypto_id`, `name`, `code`, `exchange_rate`, `last_refreshed`) VALUES
+(1, 'Bitcoin', 'BTC', '72390', '2021-12-01 23:48:37'),
+(2, 'Ethereum', 'ETH', '5774', '2021-12-01 23:48:38'),
+(5, 'Shiba Inu', 'SHIB', '0', '2021-12-01 23:48:39');
 
 -- --------------------------------------------------------
 
@@ -90,11 +92,23 @@ DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE `transaction` (
   `transactions_id` int(5) NOT NULL,
   `account_id` int(5) NOT NULL,
-  `crypto_id` int(5) NOT NULL,
+  `crypto_code` varchar(5) NOT NULL,
   `amount` double(10,2) NOT NULL,
   `total` double(12,2) NOT NULL,
   `date_time` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `transaction`
+--
+
+INSERT INTO `transaction` (`transactions_id`, `account_id`, `crypto_code`, `amount`, `total`, `date_time`) VALUES
+(28, 2, 'BTC', -10000.00, 10000.00, '2021-12-11 18:35:54'),
+(29, 2, 'BTC', -200.00, 200.00, '2021-12-11 18:46:20'),
+(30, 2, 'BTC', 0.00, 20.00, '2021-12-11 18:54:58'),
+(31, 2, 'BTC', 0.00, 0.00, '2021-12-11 18:55:53'),
+(32, 2, 'BTC', 0.00, 0.00, '2021-12-11 18:56:11'),
+(33, 2, 'BTC', -10.00, 10.00, '2021-12-11 18:56:49');
 
 -- --------------------------------------------------------
 
@@ -119,7 +133,8 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `password_hash`, `first_name`, `last_name`, `dob`, `two_factor_authentication_token`, `email`, `isAdmin`) VALUES
-(7, '$2y$10$H1DrJog8D9HNjjYKyK9ZEuDWxTslwRsyEsRdwCtPzDI9/AD0EGh8y', 'Natalie', 'Mulodjanov', '0000-00-00', '', 'ntaliemulodjanov@gmail.com', 0);
+(7, '$2y$10$H1DrJog8D9HNjjYKyK9ZEuDWxTslwRsyEsRdwCtPzDI9/AD0EGh8y', 'Natalie', 'Mulodjanov', '0000-00-00', '', 'ntaliemulodjanov@gmail.com', 0),
+(8, '$2y$10$dkM9BpcZ11i/qMyyOy0Axe1mWXxw19Pbz7knMlpBbdFbIbrNL/BI2', 'yaniv', 'Bolyasni', '0000-00-00', '', 'itai.bolyasni25@gmail.com', 0);
 
 -- --------------------------------------------------------
 
@@ -130,9 +145,16 @@ INSERT INTO `user` (`user_id`, `password_hash`, `first_name`, `last_name`, `dob`
 DROP TABLE IF EXISTS `wallet`;
 CREATE TABLE `wallet` (
   `account_id` int(5) NOT NULL,
-  `crypto_id` int(5) NOT NULL,
-  `amount` decimal(9,2) NOT NULL
+  `crypto_code` varchar(5) NOT NULL,
+  `amount` decimal(10,10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `wallet`
+--
+
+INSERT INTO `wallet` (`account_id`, `crypto_code`, `amount`) VALUES
+(2, 'BTC', '-0.9999999999');
 
 --
 -- Indexes for dumped tables
@@ -149,7 +171,8 @@ ALTER TABLE `account`
 -- Indexes for table `cryptocurrency`
 --
 ALTER TABLE `cryptocurrency`
-  ADD PRIMARY KEY (`crypto_id`);
+  ADD PRIMARY KEY (`crypto_id`),
+  ADD UNIQUE KEY `crypto_name_unique` (`code`) USING BTREE;
 
 --
 -- Indexes for table `crypto_status`
@@ -163,8 +186,8 @@ ALTER TABLE `crypto_status`
 --
 ALTER TABLE `transaction`
   ADD PRIMARY KEY (`transactions_id`),
-  ADD KEY `transaction_crypto_id_fk` (`crypto_id`),
-  ADD KEY `transaction_account_id_fk` (`account_id`);
+  ADD KEY `transaction_account_id_fk` (`account_id`),
+  ADD KEY `transaction_crypto_code_fk` (`crypto_code`);
 
 --
 -- Indexes for table `user`
@@ -176,8 +199,8 @@ ALTER TABLE `user`
 -- Indexes for table `wallet`
 --
 ALTER TABLE `wallet`
-  ADD KEY `wallet_crypto_id_fk` (`crypto_id`),
-  ADD KEY `wallet_account_id_fk` (`account_id`);
+  ADD KEY `wallet_account_id_fk` (`account_id`),
+  ADD KEY `wallet_cryoto_code_fk` (`crypto_code`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -187,7 +210,7 @@ ALTER TABLE `wallet`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `account_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `account_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `cryptocurrency`
@@ -199,13 +222,13 @@ ALTER TABLE `cryptocurrency`
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transactions_id` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `transactions_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
@@ -229,15 +252,14 @@ ALTER TABLE `crypto_status`
 --
 ALTER TABLE `transaction`
   ADD CONSTRAINT `transaction_account_id_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `transaction_crypto_id_fk` FOREIGN KEY (`crypto_id`) REFERENCES `cryptocurrency` (`crypto_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `transaction_crypto_code_fk` FOREIGN KEY (`crypto_code`) REFERENCES `cryptocurrency` (`code`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `wallet`
 --
 ALTER TABLE `wallet`
   ADD CONSTRAINT `wallet_account_id_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `wallet_crypto_id_fk` FOREIGN KEY (`crypto_id`) REFERENCES `cryptocurrency` (`crypto_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `wallet_user_id_fk` FOREIGN KEY (`account_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `wallet_cryoto_code_fk` FOREIGN KEY (`crypto_code`) REFERENCES `cryptocurrency` (`code`) ON DELETE NO ACTION ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
