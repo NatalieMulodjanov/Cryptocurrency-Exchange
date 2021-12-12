@@ -12,7 +12,7 @@
         
         <div>
             <label>Total Balance</label>
-            <label><?php echo $data['total_funds_CAD'] ?> CAD</label>
+            <label><?php echo $data['available_funds_CAD'] ?> CAD</label>
         </div>
 
         <table>
@@ -28,7 +28,7 @@
                     <td><?= $cryptoValue['name']?></td>
                     <td><?= $cryptoValue['rate'] ?></td>
                     <td><?= $cryptoValue['last_refreshed'] ?></td>
-                    <td><a href="<?=BASE?>/Account/buyCrypto">Buy <?= $cryptoValue['name']?></a></td>
+                    
                 </tr>
             <?php endforeach; ?>  
         </table>
@@ -36,6 +36,7 @@
         <a href = "<?=BASE?>/Account/addFunds">Add Funds</a>
         <a href = "<?=BASE?>/Account/removeFunds">Remove Funds</a>
         <a href = "<?=BASE?>/User/settings">Settings</a>
+        <a href="<?=BASE?>/Account/buyCrypto">Buy & Sell</a>
         <a href="<?= BASE ?>/User/logout">Logout</a>
     </body>
 </html>
