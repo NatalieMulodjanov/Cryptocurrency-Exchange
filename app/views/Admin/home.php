@@ -20,14 +20,14 @@
                     <td><?= $user->dob ?></td>
                     <td><?= $user->email ?></td>
                     <td>
-                        <a href="<?=BASE?>/User/delete">delete</a>
+                        <a href="<?=BASE?>/User/delete/$user->user_id">delete</a>
 			        </td>
                     
                 </tr>
             <?php endforeach; ?>  
         </table>
 
-        <a href="<?=BASE?>/Account/addCrypto">Add Crypto</a>
+        <a href="<?=BASE?>/Cryptocurrency/addCrypto">Add Crypto</a>
         <a href="<?= BASE ?>/User/logout">Logout</a>
     </body>
 </html>

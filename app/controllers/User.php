@@ -92,4 +92,11 @@ class User extends \app\core\Controller
 		session_destroy();
 		header('location:' . BASE . 'User/login');
 	}
+
+	//delete user
+	public function delete($user_id){
+		$user = new \app\models\User;
+		$user->delete($user_id);
+		header('location:' . BASE . 'Account/index');
+	}
 }
