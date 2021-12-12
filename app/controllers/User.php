@@ -29,6 +29,22 @@ class User extends \app\core\Controller
         }
     }
 
+	public function editPassword(){
+        if (isset($_POST['action'])) {
+			if ($_POST['password'] == $_POST['password_confirm']){
+				$user = new \app\models\User();
+        		$user = $user->getUserByemail($_POST['email']);
+				$user->password = $_POST['password'];
+            	$user->updatePassword();
+            	header('Location:' . BASE . '/User/login');
+			} else{
+				$this->view('User/editPassword', ['error' =>'Password not confirmed!']);
+			}
+        } else {
+            $this->view('User/editPassword');
+        }
+    }
+
     public function login()
 	{
 		if (isset($_POST['action'])) {

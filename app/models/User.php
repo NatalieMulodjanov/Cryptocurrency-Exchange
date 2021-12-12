@@ -33,6 +33,14 @@ class User extends \app\core\Model{
         $STMT->execute(['first_name' => $this->first_name, 'last_name' => $this->last_name, 'dob' => $this->dob, 'email' => $this->email, 'user_id' => $this->user_id]);
     }
 
+    //update password
+    public function updatePassword(){
+        $this->password_hash = password_hash($this->password, PASSWORD_DEFAULT);
+        $SQL = "UPDATE user SET password_hash = :password_hash WHERE user_id = :user_id";
+        $STMT = self::$_connection->prepare($SQL);
+        $STMT->execute(['password_hash' => $this->password_hash, 'user_id' => $this->user_id]);
+    }
+
     public function getUserByemail($email){
 		$SQL = 'SELECT * FROM user WHERE email = :email';
 		$STMT = self::$_connection->prepare($SQL);

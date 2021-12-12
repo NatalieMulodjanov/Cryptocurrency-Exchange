@@ -51,7 +51,7 @@
             </h1>
 
             <div class="d-flex">
-                <label>Total Balance</label>
+                <label>Total Balance: &nbsp;</label>
                 <label><?php echo $data['available_funds_CAD'] ?> CAD</label>
             </div>
 

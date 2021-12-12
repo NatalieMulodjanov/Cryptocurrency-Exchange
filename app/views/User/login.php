@@ -10,7 +10,8 @@
 		echo $data;
 	}
 	?>
-	<a href="<?= BASE ?>/User/register">Create a new User</a><br>
+	<a href="<?= BASE ?>/User/register">Create a new User</a>
+	<a href="<?= BASE ?>/User/editPassword">Forgot Password?</a><br><br>
 	Login
 	<form action='' method='post'>
 		Email: <input type='text' name='email' /><br>
