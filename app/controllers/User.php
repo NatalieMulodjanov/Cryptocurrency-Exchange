@@ -71,6 +71,7 @@ class User extends \app\core\Controller
 						$addFund = true;
 					}
 				}
+				//TODO fix add fund to created account
 				$account->available_funds_CAD = 0;
 				$account->user_id = $user->user_id;
 				$account->insert();
