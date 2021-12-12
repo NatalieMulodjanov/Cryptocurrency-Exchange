@@ -5,7 +5,7 @@ namespace app\models;
 class Account extends \app\core\Model
 {
     public $account_id;
-    public $total_funds_CAD;
+    public $available_funds_CAD;
     public $referral_code;
     public $user_id;
 
@@ -17,17 +17,17 @@ class Account extends \app\core\Model
     // add funds to wallet
     public function addFunds($amount)
     {
-        $SQL = "UPDATE account SET total_funds_CAD = CONVERT(:total_funds_CAD, DECIMAL) + CONVERT(:amount ,DECIMAL) WHERE account_id = :account_id";
+        $SQL = "UPDATE account SET available_funds_CAD = CONVERT(:available_funds_CAD, DECIMAL) + CONVERT(:amount ,DECIMAL) WHERE account_id = :account_id";
         $STMT = self::$_connection->prepare($SQL);
-        $STMT->execute(['total_funds_CAD' => $this->total_funds_CAD , 'amount' => $amount, 'account_id' => $this->account_id]);
+        $STMT->execute(['available_funds_CAD' => $this->available_funds_CAD , 'amount' => $amount, 'account_id' => $this->account_id]);
     }
 
     // remove funds from cad
     public function removeFunds($amount)
     {
-        $SQL = "UPDATE account SET total_funds_CAD = CONVERT(:total_funds_CAD, DECIMAL) - CONVERT(:amount, DECIMAL) WHERE account_id = :account_id";
+        $SQL = "UPDATE account SET available_funds_CAD = CONVERT(:available_funds_CAD, DECIMAL) - CONVERT(:amount, DECIMAL) WHERE account_id = :account_id";
         $STMT = self::$_connection->prepare($SQL);
-        $STMT->execute(['total_funds_CAD' => $this->total_funds_CAD , 'amount' => $amount, 'account_id' => $this->account_id]);
+        $STMT->execute(['available_funds_CAD' => $this->available_funds_CAD , 'amount' => $amount, 'account_id' => $this->account_id]);
     }
 
     //get account by account id
@@ -53,9 +53,9 @@ class Account extends \app\core\Model
     //insert into account
     public function insert()
     {
-        $SQL = "INSERT INTO account (total_funds_CAD, referral_code, user_id) VALUES (:total_funds_CAD, :referral_code, :user_id)";
+        $SQL = "INSERT INTO account (available_funds_CAD, referral_code, user_id) VALUES (:available_funds_CAD, :referral_code, :user_id)";
         $STMT = self::$_connection->prepare($SQL);
-        $STMT->execute(['total_funds_CAD' => $this->total_funds_CAD, 'referral_code' => $this->referral_code, 'user_id' => $this->user_id]);
+        $STMT->execute(['available_funds_CAD' => $this->available_funds_CAD, 'referral_code' => $this->referral_code, 'user_id' => $this->user_id]);
     }
 
 	public function delete($user_id){

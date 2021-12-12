@@ -63,7 +63,7 @@ class User extends \app\core\Controller
 				//TODO: get random refferal code 
 				$account->referral_code = '0000';
 				//TODO: total funds = 0 if not reffered, or 25 if reffered
-				$account->total_funds_CAD = 0;
+				$account->available_funds_CAD = 0;
 				$account->user_id = $user->user_id;
 				$account->insert();
 				header('location:' . BASE . 'User/login');

@@ -11,7 +11,7 @@ class Account extends \app\core\Controller
         $cryptoModel = new \app\models\Cryptocurrency();
         $cryptos = $cryptoModel->getAllCurrencies();
         $cryptoModel = $cryptos[0];
-        
+
         if (date($cryptoModel->last_refreshed, strtotime("+24 Hours")) > date('Y-m-d H:i:s')) {
             echo "here";
             var_dump(date($cryptoModel->last_refreshed, strtotime("+24 Hours")));
@@ -29,18 +29,18 @@ class Account extends \app\core\Controller
         }
         $account = new \app\models\Account();
         $account = $account->getAccountByUserId($_SESSION['user_id']);
-        $total_funds_CAD = $account->total_funds_CAD;
+        $available_funds_CAD = $account->available_funds_CAD;
 
         $user = new \app\models\User();
         $user = $user->getUserById($_SESSION['user_id']);
         $user_First_name = $user->first_name;
         $user_Last_name = $user->last_name;
 
-        $total_funds_CAD = $this->getTotalFunds($cryptoAPI, $total_funds_CAD);
+        $available_funds_CAD = $this->getTotalFunds($cryptoAPI, $available_funds_CAD);
 
         $data = [
             'cryptoAPI' => $cryptoAPI,
-            'total_funds_CAD' => $total_funds_CAD,
+            'available_funds_CAD' => $available_funds_CAD,
             'user_First_name' => $user_First_name,
             'user_Last_name' => $user_Last_name
         ];
@@ -49,6 +49,7 @@ class Account extends \app\core\Controller
 
         $this->view('Account/home', $data);
     }
+
     //method to add funds into account 
     public function addFunds()
     {
@@ -71,7 +72,7 @@ class Account extends \app\core\Controller
             $amount = $_POST['amount'];
             $account = new \app\models\Account();
             $account = $account->getAccountById($_SESSION['account_id']);
-            if ($account->total_funds_CAD >= $amount) {
+            if ($account->available_funds_CAD >= $amount) {
                 $account->removeFunds($amount);
                 header('Location:' . BASE . '/account/index');
             } else {
@@ -79,7 +80,6 @@ class Account extends \app\core\Controller
             }
         } else {
             //TODO: get session variable in login 
-            $_SESSION['account_id'] = 1;
             $this->view('Account/removeFunds',);
         }
     }
@@ -93,9 +93,8 @@ class Account extends \app\core\Controller
         $cryptocurrency = new \app\models\Cryptocurrency();
 
         foreach ($wallets as $wallet) {
-            $cryptocurrency = $cryptocurrency->getCryptocurrencyById($wallet->crypto_id);
-            $crypto_code = $cryptocurrency->crypto_code;
-            $amount_CAD = $wallet->amount * $cryptos[$crypto_code]['rate'];
+            $cryptocurrency = $cryptocurrency->getCryptocurrencyByCode($wallet->crypto_code);
+            $amount_CAD = $wallet->amount * $cryptocurrency->exchange_rate;
 
             $total_funds_CAD += $amount_CAD;
         }
@@ -103,33 +102,76 @@ class Account extends \app\core\Controller
     }
 
     //buy crypto
-    public function buy()
+    public function buyCrypto()
     {
+        $wallet = new \app\models\Wallet();
+        $account = new \app\models\Account();
+        $account = $account->getAccountById($_SESSION['account_id']);
+        $cryptoModel = new \app\models\Cryptocurrency();
+        $cryptos = $cryptoModel->getAllCurrencies();
+        $wallets = $wallet->getWalletsByAccountId($_SESSION['account_id']);
+        $available_funds_CAD = $account->available_funds_CAD;
+
         if (isset($_POST['action'])) {
             //remove from total cad in account
-            $account = new \app\models\Account();
-            $account = $account->getAccountById($_SESSION['account_id']);
-            $account->removeFunds($_POST['amount']);
+            $cryptoModel = new \app\models\Cryptocurrency();
+            $cryptoModel = $cryptoModel->getCryptocurrencyByCode($_POST['cryptos']);
 
-            // add to wallet
-            $wallet = new \app\models\Wallet();
-            $wallet->account_id = $_SESSION['account_id'];
-            $wallet->crypto_id = $_POST['crypto_id'];
-            $wallet->amount = $_POST['amount']; // exchange rate;
-            $wallet->addWallet();
+            if ($_POST['radio'] == "buy") {
+                // add to wallet
+                if ($account->available_funds_CAD < $_POST['amount']) {
+                    $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => 'Insufficient funds']);
+
+                    return;
+                }
+                $wallet->account_id = $_SESSION['account_id'];
+                $wallet->crypto_code = $_POST['cryptos'];
+                $wallet->amount = $_POST['amount'] / $cryptoModel->exchange_rate; // exchange rate;
+                // Buy flow
+                if ($wallet->getWalletsByAccountId($_SESSION['account_id']) == null) {
+                    $wallet->addWallet();
+                } else if ($wallet->getWalletByAccountIdAndCryptoCode($_SESSION['account_id'], $_POST['cryptos']) != null) {
+                    $wallet->addToWallet();
+                } else {
+                    $wallet->addWallet();
+                }
+                // remove cad from account
+                $account->removeFunds($_POST['amount']);
+            } else {
+                if ($wallet->getWalletByAccountIdAndCryptoCode($_SESSION['account_id'], $_POST['cryptos']) != null) {
+                    if ($wallet->getWalletByAccountIdAndCryptoCode($_SESSION['account_id'], $_POST['cryptos'])->amount < $_POST['amount']) {
+                        $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => 'Insufficient coin']);
+                        return;
+                    }
+                }
+                // remove from wallet
+                $wallet->account_id = $_SESSION['account_id'];
+                $wallet->crypto_code = $_POST['cryptos'];
+                $wallet->amount = $_POST['amount']; // negative value because selling
+
+                if ($wallet->getWalletByAccountIdAndCryptoCode($_SESSION['account_id'], $_POST['cryptos']) != null) {
+                    $wallet->removeFromWallet();
+                    $account->addFunds($wallet->amount * $cryptoModel->exchange_rate);
+                    $wallet->amount *= -1;
+                } else {
+                    echo "You cannot remove a coin that you dont own";
+                }
+            }
 
             // add to transaction
             $transaction = new \app\models\Transaction();
             $transaction->account_id = $_SESSION['account_id'];
-            $transaction->crypto_id = $_POST['crypto_id'];
-            $transaction->amount = $_POST['amount']; // exchange rate;
+            $transaction->crypto_code = $_POST['cryptos'];
+            $transaction->amount = $wallet->amount;
             $transaction->total = $_POST['amount'];
             $transaction->date_time = date('Y-m-d H:i:s');
             $transaction->insert();
 
+
             header('Location:' . BASE . '/Account/index');
         } else {
-            $this->view('Account/buyCrypto');
+
+            $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD]);
         }
     }
 }
