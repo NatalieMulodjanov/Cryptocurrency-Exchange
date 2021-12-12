@@ -7,6 +7,12 @@
         <a href="<?=BASE?>/Account/index">return</a>
 
         <h1>Remove Funds</h1>
+
+        <?php 
+		if (isset($data['error'])) {
+			echo $data['error'];
+		}
+	    ?>
         
         <div>
             <label>Total Balance</label>

@@ -4,8 +4,8 @@
     </head>
 
     <body>
+        <a href="<?=BASE?>/User/Settings">return</a></br></br>
         <h1>All Past Transactions</h1>
-        <a href="Account/Home">Return</a>
         
         <table>
             <th>Currency</th> <th>amount</th> <th>Total transaction in CAD</th> <th>Date and Time</th>

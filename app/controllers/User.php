@@ -86,13 +86,13 @@ class User extends \app\core\Controller
 						$addFund = true;
 					}
 				}
-				$account->available_funds_CAD = 0;
+				if($addFund){
+					$account->available_funds_CAD = 25;
+				} else{
+					$account->available_funds_CAD = 0;
+				}
 				$account->user_id = $user->user_id;
 				$account->insert();
-				//TODO fix add fund to created account
-				if($addFund){
-					$account->addFunds(25);
-				}
 				header('location:' . BASE . 'User/login');
 			} else {
 				$this->view('User/register', ['error' =>'Email already exists!']);

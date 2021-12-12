@@ -5,6 +5,7 @@
 </head>
 
 <body>
+    <a href="<?=BASE?>/User/Settings">return</a></br></br>
     <h1>Delete my account</h1>
 
     <?php if (isset($data['error'])) : ?>

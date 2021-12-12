@@ -265,13 +265,14 @@ class Account extends \app\core\Controller
         $account = $account->getAccountById($_SESSION['account_id']);
         if ($account->available_funds_CAD > 0) {
             $account->removeFunds($account->available_funds_CAD);
-            $transaction = new \app\models\Transaction();
-            $transaction->account_id = $_SESSION['account_id'];
-            $transaction->crypto_code = null;
-            $transaction->amount = 0;
-            $transaction->total = $account->available_funds_CAD;
-            $transaction->date_time = date('Y-m-d H:i:s');
-            $transaction->insert();
+            // cannot add a transaction without crypto_id, this is worthless
+            // $transaction = new \app\models\Transaction();
+            // $transaction->account_id = $_SESSION['account_id'];
+            // $transaction->crypto_code = null;
+            // $transaction->amount = 0;
+            // $transaction->total = $account->available_funds_CAD;
+            // $transaction->date_time = date('Y-m-d H:i:s');
+            // $transaction->insert();
         }
 
         header('Location:' . BASE . '/Account/deleteUser');
