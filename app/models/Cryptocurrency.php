@@ -19,7 +19,7 @@ class Cryptocurrency extends \app\core\Model
     // TODO: check api 
     public function insertCryptocurrency()
     {
-        $SQL = "INSERT INTO cryptocurrency (name, code, exchange_rate, last_refreshed) VALUES (:name, :code, :exhange_rate, :last_refreshed)";
+        $SQL = "INSERT INTO cryptocurrency (name, code, exchange_rate, last_refreshed) VALUES (:name, :code, :exchange_rate, :last_refreshed)";
         $STMT = self::$_connection->prepare($SQL);
         $STMT->execute(['name' => $this->name, 'code' => $this->code, 'exchange_rate' => $this->exchange_rate, 'last_refreshed' => $this->last_refreshed]);
     }

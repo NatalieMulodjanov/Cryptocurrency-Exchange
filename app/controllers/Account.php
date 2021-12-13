@@ -50,9 +50,6 @@ class Account extends \app\core\Controller
         if($user->isAdmin == 0){
             $this->view('Account/home', $data);
         }else{
-            $users = new \app\models\User();
-            $users = $users->getUsers();
-            $data = $users;
             $this->view('Admin/home', $data);
         }
     }
