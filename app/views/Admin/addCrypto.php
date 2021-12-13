@@ -11,6 +11,7 @@
         <form action='' method='post'>
 		Name: <input type='text' name='name' /><br>
 		Code: <input type='text' name='code' /><br>
+        Exchange Rate: <input type='text' name='exchange_rate' /><br>
 		<input type='submit' name='action' value='Enter' />
 	</form>
     </body>
