@@ -6,6 +6,7 @@
     </head>
 
     <body>
+        <a href="<?=BASE?>/Account/index">return</a>
         <h1>Buy & Sell</h1>
 
         <h3>Your Coins:</h3>
@@ -34,8 +35,8 @@
         </table>
         
         <form action="" method = "post">
-            <input type="radio" name = "radio" value="sell" checked>Sell
-            <input type="radio" name = "radio" value="buy">Buy <br>
+            <input type="radio" name = "radio" value="buy" checked>Buy
+            <input type="radio" name = "radio" value="sell">Sell <br>
 
             <select name="cryptos" id="cryptos">
             <?php foreach($data["cryptos"] as $crypto): ?>

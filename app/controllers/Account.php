@@ -123,7 +123,7 @@ class Account extends \app\core\Controller
 
             if ($_POST['radio'] == "buy") {
                 // add to wallet
-                if ($account->available_funds_CAD < $_POST['amount']) {
+                if ($account->available_funds_CAD < ($_POST['amount'] * $cryptoModel->exchange_rate)) {
                     $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => 'Insufficient funds']);
 
                     return;
