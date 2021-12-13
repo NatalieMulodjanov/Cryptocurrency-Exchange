@@ -132,7 +132,7 @@ class User extends \app\core\Controller
 				$account->insert();
 				header('location:' . BASE . 'User/login');
 			} else {
-				$this->view('User/register', ['error' => 'Email already exists!']);
+				$this->view('User/register', 'Email already exists!');
 			}
 		} else
 			$this->view('User/register');

@@ -261,6 +261,12 @@ ALTER TABLE `wallet`
 --
 
 --
+-- AUTO_INCREMENT for table "account"
+--
+ALTER TABLE `account`
+  MODIFY `account_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
 -- AUTO_INCREMENT for table `cryptocurrency`
 --
 ALTER TABLE `cryptocurrency`

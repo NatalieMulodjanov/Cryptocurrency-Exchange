@@ -72,47 +72,6 @@
 </head>
 
 <body>
-	<nav class="container navbar navbar-expand-lg">
-		<div style="width: 100%">
-			<ul class="navbar-nav col-md-12" style="display: flex; align-items: center; width: 100%">
-				<div style="display: flex">
-					<li class="nav-item" style="display: flex; justify-content: center;align-items: center;">
-						<img class="logo" src="/Final_Project/app/imgs/<?= $data['cryptoAPI']['BTC']['coin_logo_path'] ?>" alt="logo">
-					</li>
-					<li class="nav-item" style="display: flex; justify-content: center;align-items: center; ">
-						<span class="cryptoAmount">$<?= number_format($data['cryptoAPI']['BTC']['rate'], 2) ?></span>
-					</li>
-					<li class="nav-item" style="display: flex; justify-content: center;align-items: center;">
-						<img class="logo" src="/Final_Project/app/imgs/<?= $data['cryptoAPI']['ETH']['coin_logo_path'] ?>" alt="logo">
-					</li>
-					<li class="nav-item" style="margin-right: 60px; display: flex; justify-content: center;align-items: center;">
-						<span class="cryptoAmount">$<?= number_format($data['cryptoAPI']['ETH']['rate'], 2) ?></span>
-					</li>
-				</div>
-
-				<div style="display: flex; justify-content: flex-end; width: 100%">
-					<li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end; align-items: center;">
-						<a class="nav-link" href="<?= BASE ?>Account/index"><i class="fa fa-home fa-lg" aria-hidden="true" alt="Home"></i></a>
-					</li>
-					<li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end;">
-						<a class="nav-link" href="<?= BASE ?>Account/addFunds">Deposit Funds <i class="fa fa-arrow-up" aria-hidden="true"></i></a>
-					</li>
-					<li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end;">
-						<a class="nav-link" href="<?= BASE ?>Account/removeFunds">Withdraw Funds <i class="fa fa-arrow-down" aria-hidden="true"></i></a>
-					</li>
-					<li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end;">
-						<a class="nav-link" href="<?= BASE ?>Account/buyCrypto">Buy & Sell</a>
-					</li>
-					<li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end; align-items: center;">
-						<a class="nav-link" href="<?= BASE ?>User/settings"><i class="fa fa-cog fa-lg" alt="Settings"></i></a>
-					</li>
-					<li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end; align-items: center;">
-						<a class="nav-link" href="<?= BASE ?>User/logout"><i class="fas fa-sign-out-alt fa-lg" alt="Logout"></i></a>
-					</li>
-				</div>
-			</ul>
-		</div>
-	</nav>
 	<div class="container d-flex">
 		<div class="d-flex" style="flex-direction: column; width: 100%">
 			<?php
