@@ -9,6 +9,7 @@ class Cryptocurrency extends \app\core\Model
     public $code;
     public $exchange_rate;
     public $last_refreshed;
+    public $coin_logo_path;
 
     public function __construct()
     {
@@ -19,9 +20,9 @@ class Cryptocurrency extends \app\core\Model
     // TODO: check api 
     public function insertCryptocurrency()
     {
-        $SQL = "INSERT INTO cryptocurrency (name, code, exchange_rate, last_refreshed) VALUES (:name, :code, :exhange_rate, :last_refreshed)";
+        $SQL = "INSERT INTO cryptocurrency (name, code, exchange_rate, last_refreshed, coin_logo_path) VALUES (:name, :code, :exhange_rate, :last_refreshed, :coin_logo_path)";
         $STMT = self::$_connection->prepare($SQL);
-        $STMT->execute(['name' => $this->name, 'code' => $this->code, 'exchange_rate' => $this->exchange_rate, 'last_refreshed' => $this->last_refreshed]);
+        $STMT->execute(['name' => $this->name, 'code' => $this->code, 'exchange_rate' => $this->exchange_rate, 'last_refreshed' => $this->last_refreshed, 'coin_logo_path' => $this->coin_logo_path]);
     }
 
     public function updateCryptocurrency()
@@ -71,6 +72,9 @@ class Cryptocurrency extends \app\core\Model
             $currency->updateCryptocurrency();
             $results[] = $currency;
         }
+        
+
+        return $results;
     }
 
     //get all currencies from db

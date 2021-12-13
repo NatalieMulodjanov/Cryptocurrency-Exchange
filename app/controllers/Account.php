@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Cryptocurrency;
+use DateTime;
 
 class Account extends \app\core\Controller
 {
@@ -11,22 +12,57 @@ class Account extends \app\core\Controller
         $cryptoModel = new \app\models\Cryptocurrency();
         $cryptos = $cryptoModel->getAllCurrencies();
         $cryptoModel = $cryptos[0];
-
-        if (date($cryptoModel->last_refreshed, strtotime("+24 Hours")) > date('Y-m-d H:i:s')) {
-            echo "here";
-            var_dump(date($cryptoModel->last_refreshed, strtotime("+24 Hours")));
-            var_dump(date('Y-m-d H:i:s'));
+        $date = date($cryptoModel->last_refreshed);
+        $date = new DateTime($date);
+        $dateTimeNow = new DateTime();
+        // update value of crypto every day
+        if ($date->modify('+1 day') < $dateTimeNow) {
             $cryptos = $cryptoModel->updateCurrencyFromApi($cryptos);
         }
-        // var_dump($cryptos);
+
+        $wallet = new \app\models\Wallet();
+        $wallet = $wallet->getWalletsByAccountId($_SESSION['account_id']);
+
         $cryptoAPI = [];
+        $ownedCrypto = [];
+        foreach ($cryptos as $crypto) {
+            foreach ($wallet as $w) {
+                if ($crypto->code == $w->crypto_code) {
+                    $ownedCrypto[$crypto->code] = [
+                        'name' => $crypto->name,
+                        'rate' => $crypto->exchange_rate,
+                        'last_refreshed' => $crypto->last_refreshed,
+                        'amount_owned' => $w->amount,
+                        'coin_logo_path' => $crypto->coin_logo_path,
+                    ];
+                }
+            }
+        }
+
+        $favoriteCryptos = new \app\models\Crypto_status();
+        $favoriteCryptos = $favoriteCryptos->getAllFavoritesForAccountId($_SESSION['account_id']);
+        $favorites = [];
+
         foreach ($cryptos as $crypto) {
             $cryptoAPI[$crypto->code] = [
                 'name' => $crypto->name,
                 'rate' => $crypto->exchange_rate,
-                'last_refreshed' => $crypto->last_refreshed
+                'last_refreshed' => $crypto->last_refreshed,
+                'coin_logo_path' => $crypto->coin_logo_path
             ];
+
+            foreach ($favoriteCryptos as $favoriteCrypto) {
+                if ($crypto->code == $favoriteCrypto->crypto_code) {
+                    $favorites[$crypto->code] = [
+                        'name' => $crypto->name,
+                        'rate' => $crypto->exchange_rate,
+                        'last_refreshed' => $crypto->last_refreshed,
+                        'coin_logo_path' => $crypto->coin_logo_path
+                    ];
+                }
+            }
         }
+
         $account = new \app\models\Account();
         $account = $account->getAccountByUserId($_SESSION['user_id']);
         $available_funds_CAD = $account->available_funds_CAD;
@@ -36,20 +72,24 @@ class Account extends \app\core\Controller
         $user_First_name = $user->first_name;
         $user_Last_name = $user->last_name;
 
-        $available_funds_CAD = $this->getTotalFunds($cryptoAPI, $available_funds_CAD);
+        $total_funds_CAD = $this->getTotalFunds($cryptoAPI, $available_funds_CAD);
 
         $data = [
+            'ownedCrypto' => $ownedCrypto,
             'cryptoAPI' => $cryptoAPI,
+            'allCryptos' => $cryptos,
             'available_funds_CAD' => $available_funds_CAD,
+            'total_funds_CAD' => $total_funds_CAD,
             'user_First_name' => $user_First_name,
-            'user_Last_name' => $user_Last_name
+            'user_Last_name' => $user_Last_name,
+            'favorites' => $favorites
         ];
 
         //  var_dump($data);
 
-        if($user->isAdmin == 0){
+        if ($user->isAdmin == 0) {
             $this->view('Account/home', $data);
-        }else{
+        } else {
             $users = new \app\models\User();
             $users = $users->getUsers();
             $data = $users;
@@ -68,7 +108,21 @@ class Account extends \app\core\Controller
             $account->addFunds($amount);
             header('Location:' . BASE . '/account/index');
         } else {
-            $this->view('Account/addFunds');
+            $cryptoModel = new \app\models\Cryptocurrency();
+            $cryptos = $cryptoModel->getAllCurrencies();
+
+            $account = new \app\models\Account();
+            $account = $account->getAccountById($_SESSION['account_id']);
+
+            foreach ($cryptos as $crypto) {
+                $cryptoAPI[$crypto->code] = [
+                    'name' => $crypto->name,
+                    'rate' => $crypto->exchange_rate,
+                    'last_refreshed' => $crypto->last_refreshed,
+                    'coin_logo_path' => $crypto->coin_logo_path
+                ];
+            }
+            $this->view('Account/addFunds', ['cryptoAPI' => $cryptoAPI, 'available_funds_CAD' => $account->available_funds_CAD]);
         }
     }
 
@@ -86,8 +140,21 @@ class Account extends \app\core\Controller
                 $this->view('account/removeFunds', ['error' => 'Insufficient funds']);
             }
         } else {
-            //TODO: get session variable in login 
-            $this->view('Account/removeFunds',);
+            $cryptoModel = new \app\models\Cryptocurrency();
+            $cryptos = $cryptoModel->getAllCurrencies();
+
+            $account = new \app\models\Account();
+            $account = $account->getAccountById($_SESSION['account_id']);
+
+            foreach ($cryptos as $crypto) {
+                $cryptoAPI[$crypto->code] = [
+                    'name' => $crypto->name,
+                    'rate' => $crypto->exchange_rate,
+                    'last_refreshed' => $crypto->last_refreshed,
+                    'coin_logo_path' => $crypto->coin_logo_path
+                ];
+            }
+            $this->view('Account/removeFunds', ['cryptoAPI' => $cryptoAPI, 'available_funds_CAD' => $account->available_funds_CAD]);
         }
     }
 
@@ -119,6 +186,16 @@ class Account extends \app\core\Controller
         $wallets = $wallet->getWalletsByAccountId($_SESSION['account_id']);
         $available_funds_CAD = $account->available_funds_CAD;
 
+        $cryptoAPI = [];
+        foreach ($cryptos as $crypto) {
+            $cryptoAPI[$crypto->code] = [
+                'name' => $crypto->name,
+                'rate' => $crypto->exchange_rate,
+                'last_refreshed' => $crypto->last_refreshed,
+                'coin_logo_path' => $crypto->coin_logo_path
+            ];
+        }
+
         if (isset($_POST['action'])) {
             //remove from total cad in account
             $cryptoModel = new \app\models\Cryptocurrency();
@@ -127,7 +204,7 @@ class Account extends \app\core\Controller
             if ($_POST['radio'] == "buy") {
                 // add to wallet
                 if ($account->available_funds_CAD < $_POST['amount']) {
-                    $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => 'Insufficient funds']);
+                    $this->view('Account/buyAndSellCrypto', ['cryptoAPI' => $cryptoAPI, 'cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => 'Insufficient funds']);
 
                     return;
                 }
@@ -147,7 +224,7 @@ class Account extends \app\core\Controller
             } else {
                 if ($wallet->getWalletByAccountIdAndCryptoCode($_SESSION['account_id'], $_POST['cryptos']) != null) {
                     if ($wallet->getWalletByAccountIdAndCryptoCode($_SESSION['account_id'], $_POST['cryptos'])->amount < $_POST['amount']) {
-                        $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => 'Insufficient coin']);
+                        $this->view('Account/buyAndSellCrypto', ['cryptoAPI' => $cryptoAPI, 'cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => 'Insufficient coin']);
                         return;
                     }
                 }
@@ -165,7 +242,8 @@ class Account extends \app\core\Controller
 
                     $account->addFunds($wallet->amount * $cryptoModel->exchange_rate);
                 } else {
-                    echo "You cannot remove a coin that you dont own";
+                    $this->view('Account/buyAndSellCrypto', ['cryptoAPI' => $cryptoAPI, 'cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => 'You cannot remove a coin that you dont own']);
+                    return;
                 }
             }
 
@@ -182,7 +260,7 @@ class Account extends \app\core\Controller
             header('Location:' . BASE . '/Account/index');
         } else {
 
-            $this->view('Account/buyAndSellCrypto', ['cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD]);
+            $this->view('Account/buyAndSellCrypto', ['cryptoAPI' => $cryptoAPI, 'cryptos' => $cryptos, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD]);
         }
     }
 
@@ -191,12 +269,35 @@ class Account extends \app\core\Controller
     {
         $transaction = new \app\models\Transaction();
         $transactions = $transaction->getAllTransactionsByAccountId($_SESSION['account_id']);
-        $this->view('Account/viewPastTransaction', ['transactions' => $transactions]);
+        $cryptoModel = new \app\models\Cryptocurrency();
+        $cryptos = $cryptoModel->getAllCurrencies();
+        $cryptoAPI = [];
+        foreach ($cryptos as $crypto) {
+            $cryptoAPI[$crypto->code] = [
+                'name' => $crypto->name,
+                'rate' => $crypto->exchange_rate,
+                'last_refreshed' => $crypto->last_refreshed,
+                'coin_logo_path' => $crypto->coin_logo_path
+            ];
+        }
+
+        $this->view('Account/viewPastTransaction', ['cryptoAPI'=>$cryptoAPI, 'transactions' => $transactions]);
     }
 
     //delete user by account id 
     public function deleteUser()
     {
+        $cryptoModel = new \app\models\Cryptocurrency();
+        $cryptos = $cryptoModel->getAllCurrencies();
+        $cryptoAPI = [];
+        foreach ($cryptos as $crypto) {
+            $cryptoAPI[$crypto->code] = [
+                'name' => $crypto->name,
+                'rate' => $crypto->exchange_rate,
+                'last_refreshed' => $crypto->last_refreshed,
+                'coin_logo_path' => $crypto->coin_logo_path
+            ];
+        }
 
         $account = new \app\models\Account();
         $account = $account->getAccountById($_SESSION['account_id']);
@@ -211,14 +312,14 @@ class Account extends \app\core\Controller
         if (isset($_POST['action'])) {
             if ($account->available_funds_CAD > 0) {
                 $error = "You cannot delete a user with available funds, make sure to deposit all your CAD";
-                $this->view('Account/deleteAccount', ['wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => $error]);
+                $this->view('Account/deleteAccount', ['cryptoAPI' => $cryptoAPI, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => $error]);
                 return;
             }
             if (isset($wallets) && $wallets != null) {
                 foreach ($wallets as $wallet) {
                     if ($wallet->amount > 0) {
                         $error = "You cannot delete before trading all cryptocurrencies to CAD, please click 'Trade all cryptocurrencies'";
-                        $this->view('Account/deleteAccount', ['wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => $error]);
+                        $this->view('Account/deleteAccount', ['cryptoAPI' => $cryptoAPI, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD, 'error' => $error]);
                         return;
                     }
                 }
@@ -226,7 +327,7 @@ class Account extends \app\core\Controller
             $user->delete();
             header('Location:' . BASE . '/User/logout');
         } else {
-            $this->view('Account/deleteAccount', ['wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD]);
+            $this->view('Account/deleteAccount', ['cryptoAPI' => $cryptoAPI, 'wallets' => $wallets, 'available_funds_CAD' => $available_funds_CAD]);
         }
     }
 
@@ -277,13 +378,25 @@ class Account extends \app\core\Controller
 
         header('Location:' . BASE . '/Account/deleteUser');
     }
-    
+
     //get referral code from account
     public function getReferral()
     {
+        $cryptoModel = new \app\models\Cryptocurrency();
+        $cryptos = $cryptoModel->getAllCurrencies();
+        $cryptoAPI = [];
+        foreach ($cryptos as $crypto) {
+            $cryptoAPI[$crypto->code] = [
+                'name' => $crypto->name,
+                'rate' => $crypto->exchange_rate,
+                'last_refreshed' => $crypto->last_refreshed,
+                'coin_logo_path' => $crypto->coin_logo_path
+            ];
+        }
+
         $account = new \app\models\Account();
         $account = $account->getAccountById($_SESSION['account_id']);
         $referral = $account->referral_code;
-        $this->view('Account/getReferral', $referral);
+        $this->view('Account/getReferral', ['referral'=> $referral, 'cryptoAPI' => $cryptoAPI]);
     }
 }

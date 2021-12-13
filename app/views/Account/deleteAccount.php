@@ -2,46 +2,170 @@
 
 <head>
     <title>Delete my account</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: rgba(255, 255, 255, 1)
+        }
+
+        .logo {
+            width: 30px;
+            height: 30px;
+        }
+
+        .cryptoAmount {
+            color: black;
+            font-size: 1rem;
+            margin-right: 30px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .cryptoAmount:hover {
+            color: rgb(28, 165, 211) !important;
+            cursor: pointer !important;
+            transition: all 0.3s !important;
+        }
+
+        .nav-item-link {
+            margin-right: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        a:hover {
+            color: rgb(28, 165, 211) !important;
+            cursor: pointer !important;
+            transition: all 0.3s !important;
+        }
+
+        a {
+            color: black;
+        }
+
+        .nav-link {
+            color: black;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .inactive-favorite:hover {
+            color: gold !important;
+        }
+
+        .active-favorite:hover {
+            color: black !important;
+        }
+    </style>
 </head>
 
 <body>
-    <a href="<?=BASE?>/User/Settings">return</a></br></br>
-    <h1>Delete my account</h1>
+    <nav class="container navbar navbar-expand-lg">
+        <div style="width: 100%">
+            <ul class="navbar-nav col-md-12" style="display: flex; align-items: center; width: 100%">
+                <div style="display: flex">
+                    <li class="nav-item" style="display: flex; justify-content: center;align-items: center;">
+                        <img class="logo" src="/Final_Project/app/imgs/<?= $data['cryptoAPI']['BTC']['coin_logo_path'] ?>" alt="logo">
+                    </li>
+                    <li class="nav-item" style="display: flex; justify-content: center;align-items: center; ">
+                        <span class="cryptoAmount">$<?= number_format($data['cryptoAPI']['BTC']['rate'], 2) ?></span>
+                    </li>
+                    <li class="nav-item" style="display: flex; justify-content: center;align-items: center;">
+                        <img class="logo" src="/Final_Project/app/imgs/<?= $data['cryptoAPI']['ETH']['coin_logo_path'] ?>" alt="logo">
+                    </li>
+                    <li class="nav-item" style="margin-right: 60px; display: flex; justify-content: center;align-items: center;">
+                        <span class="cryptoAmount">$<?= number_format($data['cryptoAPI']['ETH']['rate'], 2) ?></span>
+                    </li>
+                </div>
 
-    <?php if (isset($data['error'])) : ?>
-        <script>
-            alert("<?php echo $data["error"]; ?>");
-        </script>
+                <div style="display: flex; justify-content: flex-end; width: 100%">
+                    <li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end; align-items: center;">
+                        <a class="nav-link" href="<?= BASE ?>Account/index"><i class="fa fa-home fa-lg" aria-hidden="true" alt="Home"></i></a>
+                    </li>
+                    <li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end;">
+                        <a class="nav-link" href="<?= BASE ?>Account/addFunds">Deposit Funds <i class="fa fa-arrow-up" aria-hidden="true"></i></a>
+                    </li>
+                    <li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end;">
+                        <a class="nav-link" href="<?= BASE ?>Account/removeFunds">Withdraw Funds <i class="fa fa-arrow-down" aria-hidden="true"></i></a>
+                    </li>
+                    <li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end;">
+                        <a class="nav-link" href="<?= BASE ?>Account/buyCrypto">Buy & Sell</a>
+                    </li>
+                    <li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end; align-items: center;">
+                        <a class="nav-link" href="<?= BASE ?>User/settings"><i class="fa fa-cog fa-lg" alt="Settings"></i></a>
+                    </li>
+                    <li class="nav-item nav-item-link" style="display: flex; justify-content: flex-end; align-items: center;">
+                        <a class="nav-link" href="<?= BASE ?>User/logout"><i class="fas fa-sign-out-alt fa-lg" alt="Logout"></i></a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </nav>
+    <div class="container d-flex">
+        <div class="d-flex" style="flex-direction: column; width: 100%">
+            <?php if (isset($data['error'])) : ?>
+                <script>
+                    alert("<?php echo $data["error"]; ?>");
+                </script>
 
-    <?php endif; ?>
-    <table>
-        <th>Currency</th>
-        <th>Amount</th>
-        <?php foreach ($data['wallets'] as $wallet) : ?>
-            <tr>
-                <td><?= $wallet->crypto_code ?></td>
-                <td><?= $wallet->amount ?></td>
-            </tr>
+            <?php endif; ?>
 
-        <?php endforeach; ?>
+            <h1 style="font-weight: bold; margin-bottom: 20px; margin-top: 20px;" class="d-flex justify-content-center">
+                Delete my account
+            </h1>
 
-        <tr>
-            <td>CAD</td>
-            <td><?php echo $data["available_funds_CAD"] ?></td>
-        </tr>
-    </table>
+            <table class="d-flex table table-hover" style="display: flex; align-items: center; margin-bottom: 10px;">
+                <tr style="display: flex; font-size: 17px">
+                    <th style="width: 645px; display: flex">Currency</th>
+                    <th style="width: 645px; display: flex">Amount</th>
+                </tr>
+                <?php foreach ($data['wallets'] as $wallet) : ?>
+                    <tr style="display: flex">
+                        <td style="width: 645px; display: flex; align-items: center;">
+                            <span style="font-size: 19px; font-weight: 300; margin-left: 15px; color: rgb(93, 93, 93)"><?= $wallet->crypto_code ?></span>
+                        </td>
+                        <td style="width: 645px; display: flex; align-items: center;">
+                            <span style="font-size: 18px; font-weight: bold; color: black"><?= $wallet->amount ?></span>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
 
-    <?php if (isset($data['wallets']) && $data['wallets'] != null) : ?>
-        <a href="tradeAll">Trade all cryptocurrencies</a>
-    <?php endif; ?>
+                <tr style="display: flex">
+                    <td style="width: 645px; display: flex; align-items: center;">
+                        <span style="font-size: 19px; font-weight: 300; margin-left: 15px; color: rgb(93, 93, 93)">CAD</span>
 
-    <?php if (isset($data['available_funds_CAD']) && $data['available_funds_CAD'] != null && $data['available_funds_CAD'] > 0) : ?>
-        <a href="withdrawAll">Withdraw all CAD</a>
-    <?php endif; ?>
+                    </td>
+                    <td style="width: 645px; display: flex; align-items: center;">
+                        <span style="font-size: 18px; font-weight: bold; color: black"><?= $data["available_funds_CAD"] ?></span>
+                    </td>
+                </tr>
+            </table>
 
-    <form action="" method="post">
-        <input type="submit" name="action" value="Delete My Account">
-    </form>
+            <?php if (isset($data['wallets']) && $data['wallets'] != null) : ?>
+                <a href="tradeAll">Trade all cryptocurrencies</a>
+            <?php endif; ?>
+
+            <?php if (isset($data['available_funds_CAD']) && $data['available_funds_CAD'] != null && $data['available_funds_CAD'] > 0) : ?>
+                <a href="withdrawAll">Withdraw all CAD</a>
+            <?php endif; ?>
+
+            <form action="" method="post">
+                <input class="btn btn-danger" type="submit" name="action" value="Delete My Account">
+            </form>
+        </div>
+    </div>
 
 </body>
 

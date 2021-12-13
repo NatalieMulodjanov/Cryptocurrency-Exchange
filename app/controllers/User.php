@@ -1,51 +1,88 @@
 <?php
+
 namespace app\controllers;
 
 class User extends \app\core\Controller
 {
 	#[\app\filters\Login]
-    public function index()
-    {
-       header('Location:' . BASE . '/Account/home');
-    }
+	public function index()
+	{
+		header('Location:' . BASE . '/Account/home');
+	}
 
-    public function settings()
-    {
-        $this->view('User/settings');
-    }
+	public function settings()
+	{
+		$cryptoModel = new \app\models\Cryptocurrency();
+		$cryptos = $cryptoModel->getAllCurrencies();
+		$cryptoAPI = [];
+		foreach ($cryptos as $crypto) {
+			$cryptoAPI[$crypto->code] = [
+				'name' => $crypto->name,
+				'rate' => $crypto->exchange_rate,
+				'last_refreshed' => $crypto->last_refreshed,
+				'coin_logo_path' => $crypto->coin_logo_path
+			];
+		}
 
-    public function editPersonalInfo(){
-        $user = new \app\models\User();
-        $user = $user->getUserById($_SESSION['user_id']);
-        if (isset($_POST['action'])) {
-            $user->first_name = $_POST['first_name'];
-            $user->last_name = $_POST['last_name'];
-            $user->dob = $_POST['dob'];
-            $user->email = $_POST['email'];
-            $user->update();
-            header('Location:' . BASE . '/user/editPersonalInfo');
-        } else {
-            $this->view('User/editPersonalInfo', $user);
-        }
-    }
+		$this->view('User/settings', ['cryptoAPI' => $cryptoAPI]);
+	}
 
-	public function editPassword(){
-        if (isset($_POST['action'])) {
-			if ($_POST['password'] == $_POST['password_confirm']){
-				$user = new \app\models\User();
-        		$user = $user->getUserByemail($_POST['email']);
-				$user->password = $_POST['password'];
-            	$user->updatePassword();
-            	header('Location:' . BASE . '/User/login');
-			} else{
-				$this->view('User/editPassword', ['error' =>'Password not confirmed!']);
+	public function editPersonalInfo()
+	{
+		$user = new \app\models\User();
+		$user = $user->getUserById($_SESSION['user_id']);
+		if (isset($_POST['action'])) {
+			$user->first_name = $_POST['first_name'];
+			$user->last_name = $_POST['last_name'];
+			$user->dob = $_POST['dob'];
+			$user->email = $_POST['email'];
+			$user->update();
+			header('Location:' . BASE . '/user/editPersonalInfo');
+		} else {
+			$cryptoModel = new \app\models\Cryptocurrency();
+			$cryptos = $cryptoModel->getAllCurrencies();
+			$cryptoAPI = [];
+			foreach ($cryptos as $crypto) {
+				$cryptoAPI[$crypto->code] = [
+					'name' => $crypto->name,
+					'rate' => $crypto->exchange_rate,
+					'last_refreshed' => $crypto->last_refreshed,
+					'coin_logo_path' => $crypto->coin_logo_path
+				];
 			}
-        } else {
-            $this->view('User/editPassword');
-        }
-    }
+			$this->view('User/editPersonalInfo', ['users'=> $user, 'cryptoAPI'=>$cryptoAPI]);
+		}
+	}
 
-    public function login()
+	public function editPassword()
+	{
+		$cryptoModel = new \app\models\Cryptocurrency();
+		$cryptos = $cryptoModel->getAllCurrencies();
+		$cryptoAPI = [];
+		foreach ($cryptos as $crypto) {
+			$cryptoAPI[$crypto->code] = [
+				'name' => $crypto->name,
+				'rate' => $crypto->exchange_rate,
+				'last_refreshed' => $crypto->last_refreshed,
+				'coin_logo_path' => $crypto->coin_logo_path
+			];
+		}
+		if (isset($_POST['action'])) {
+			if ($_POST['password'] == $_POST['password_confirm']) {
+				$user = new \app\models\User();
+				$user = $user->getUserByemail($_POST['email']);
+				$user->password = $_POST['password'];
+				$user->updatePassword();
+				header('Location:' . BASE . '/User/login');
+			} else {
+				$this->view('User/editPassword', ['error' => 'Password not confirmed!', 'cryptoAPI'=>$cryptoAPI]);
+			}
+		} else {
+			$this->view('User/editPassword', ['cryptoAPI'=>$cryptoAPI]);
+		}
+	}
+
+	public function login()
 	{
 		if (isset($_POST['action'])) {
 			$user = new \app\models\User();
@@ -61,8 +98,8 @@ class User extends \app\core\Controller
 		} else
 			$this->view('User/login');
 	}
-  
-    public function register()
+
+	public function register()
 	{
 		if (isset($_POST['action']) && $_POST['password'] == $_POST['password_confirm']) {
 			$user = new \app\models\User();
@@ -80,28 +117,28 @@ class User extends \app\core\Controller
 				$accounts = new \app\models\Account();
 				$accounts = $accounts->getAccounts();
 				$addFund = false;
-				foreach($accounts as $account2){
-					if($account2->referral_code == $referral){
+				foreach ($accounts as $account2) {
+					if ($account2->referral_code == $referral) {
 						$account2->addFunds(25);
 						$addFund = true;
 					}
 				}
-				if($addFund){
+				if ($addFund) {
 					$account->available_funds_CAD = 25;
-				} else{
+				} else {
 					$account->available_funds_CAD = 0;
 				}
 				$account->user_id = $user->user_id;
 				$account->insert();
 				header('location:' . BASE . 'User/login');
 			} else {
-				$this->view('User/register', ['error' =>'Email already exists!']);
+				$this->view('User/register', ['error' => 'Email already exists!']);
 			}
 		} else
 			$this->view('User/register');
 	}
 
-    #[\app\filters\Login]
+	#[\app\filters\Login]
 	public function logout()
 	{
 		session_destroy();
@@ -109,7 +146,8 @@ class User extends \app\core\Controller
 	}
 
 	//delete user
-	public function delete($user_id){
+	public function delete($user_id)
+	{
 		$user = new \app\models\User;
 		$user->delete($user_id);
 		header('location:' . BASE . 'Account/index');
