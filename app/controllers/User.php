@@ -149,7 +149,8 @@ class User extends \app\core\Controller
 	public function delete($user_id)
 	{
 		$user = new \app\models\User;
-		$user->delete($user_id);
+		$user = $user->getUserById($user_id);
+		$user->delete();
 		header('location:' . BASE . 'Account/index');
 	}
 }

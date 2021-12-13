@@ -119,7 +119,7 @@
                     <th style="width: 300px; display: flex">Last name</th>
                     <th style="width: 300px; display: flex">Date of birth</th>
                     <th style="width: 300px; display: flex">Email</th>
-                    <th style="width: 300px; display: flex">Delete</th>
+                    <th style="width: 150px; display: flex">Delete</th>
                 </tr>
                 <?php if (empty($data['users'])) : ?>
                     <tr style="display: flex">
@@ -142,7 +142,7 @@
                         <td style="width: 300px; display: flex; align-items: center;">
                             <span style="font-size: 19px; color: black"><?= $user->email ?></span>
                         </td>
-                        <td style="width: 300px; display: flex; align-items: center;">
+                        <td style="width: 150px; display: flex; align-items: center;">
                             <a href="<?= BASE ?>/User/delete/<?= $user->user_id ?>" class="btn btn-danger" style="width: 100px">Delete</span>
                         </td>
                     </tr>
@@ -155,5 +155,4 @@
     <a href="<?= BASE ?>/Cryptocurrency/addCrypto">Add Crypto</a>
     <a href="<?= BASE ?>/User/logout">Logout</a>
 </body>
-
 </html>

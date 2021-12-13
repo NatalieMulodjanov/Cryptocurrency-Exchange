@@ -14,7 +14,18 @@ class Cryptocurrency extends \app\core\Controller
             $crypto->insertCryptocurrency();
             header('Location:' . BASE . '/Admin/home');
         } else {
-            $this->view('Admin/addCrypto');
+            $cryptoModel = new \app\models\Cryptocurrency();
+            $cryptos = $cryptoModel->getAllCurrencies();
+            $cryptoAPI = [];
+            foreach ($cryptos as $crypto) {
+                $cryptoAPI[$crypto->code] = [
+                    'name' => $crypto->name,
+                    'rate' => $crypto->exchange_rate,
+                    'last_refreshed' => $crypto->last_refreshed,
+                    'coin_logo_path' => $crypto->coin_logo_path
+                ];
+            }
+            $this->view('Admin/addCrypto', ['cryptoAPI' => $cryptoAPI]);
         }
     }
 

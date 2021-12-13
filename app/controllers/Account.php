@@ -93,7 +93,7 @@ class Account extends \app\core\Controller
             $users = new \app\models\User();
             $users = $users->getUsers();
             $data = $users;
-            $this->view('Admin/home', $data);
+            $this->view('Admin/home', ['users' => $users, 'cryptoAPI' => $cryptoAPI       ]);
         }
     }
 

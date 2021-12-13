@@ -161,6 +161,7 @@
                         <span style="font-size: 18px; font-weight: bold; color: black"><?= $data["available_funds_CAD"] ?></span>
                     </td>
                 </tr>
+<<<<<<< HEAD
                 <?php endif; ?>
             </table>
 
@@ -192,4 +193,27 @@
 
 </body>
 
+=======
+        </table>
+        
+        <form action="" method = "post">
+            <input type="radio" name = "radio" value="buy" checked>Buy
+            <input type="radio" name = "radio" value="sell">Sell <br>
+
+            <select name="cryptos" id="cryptos">
+            <?php foreach($data["cryptos"] as $crypto): ?>
+                    
+                    <option value="<?php echo  $crypto->code?>">
+                        <?php echo $crypto->code ?>
+                    </option>
+            <?php endforeach; ?>
+            </select> <br>
+
+            Amount<input type="text" name = "amount"> <br>
+            <input type="submit" value="Submit" name = "action">
+        </form>
+
+     
+    </body>
+>>>>>>> 82a87c392ffa29e2d23367c352161f7b3e5786ff
 </html>

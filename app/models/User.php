@@ -68,9 +68,8 @@ class User extends \app\core\Model{
     //delete user by account id
 	public function delete(){
 		$SQL = 'DELETE FROM `user` WHERE user_id = :user_id';
-        echo "lala".$this->user_id;
 		$STMT = self::$_connection->prepare($SQL);
-		var_dump($STMT->execute(['user_id'=>$this->user_id]));
+		$STMT->execute(['user_id'=>$this->user_id]);
 	}
 
     //get account id by user id
