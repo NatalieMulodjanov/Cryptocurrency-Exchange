@@ -252,7 +252,7 @@ class Account extends \app\core\Controller
             $transaction->account_id = $_SESSION['account_id'];
             $transaction->crypto_code = $_POST['cryptos'];
             $transaction->amount = $_POST['radio'] == "buy" ? $wallet->amount : $wallet->amount * -1;
-            $transaction->total = $_POST['radio'] == "buy" ? $_POST['amount'] * -1 : $_POST['amount'];
+            $transaction->total = $_POST['radio'] == "buy" ? $_POST['amount'] * -1 : $_POST['amount'] * $cryptoModel->exchange_rate;
             $transaction->date_time = date('Y-m-d H:i:s');
             $transaction->insert();
 
