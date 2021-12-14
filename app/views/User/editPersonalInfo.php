@@ -121,16 +121,16 @@
 
             <form method="post" style="margin: 0 auto">
                 <label for="firstname">First name</label>
-                <input style="width: 450px;margin-right: 10px" type="text" class="form-control" id="firstname" value="<?= $data['users']->first_name ?>">
+                <input style="width: 450px;margin-right: 10px" type="text" class="form-control" id="firstname" name="first_name" value="<?= $data['users']->first_name ?>">
 
                 <label for="lastname">Last name</label>
-                <input style="width: 450px; margin-right: 10px" type="text" class="form-control" id="lastname" value="<?= $data['users']->last_name ?>">
+                <input style="width: 450px; margin-right: 10px" type="text" class="form-control" id="lastname" name="last_name" value="<?= $data['users']->last_name ?>">
 
                 <label for="dob">Date of birth</label>
-                <input style="width: 450px; margin-right: 10px" type="text" class="form-control" id="dob" value="<?= $data['users']->dob ?>">
+                <input style="width: 450px; margin-right: 10px" type="text" class="form-control" id="dob" name="dob" value="<?= $data['users']->dob ?>">
 
                 <label for="email">Email</label>
-                <input style="width: 450px; margin-right: 10px" type="text" class="form-control" id="email" value="<?= $data['users']->email ?>">
+                <input style="width: 450px; margin-right: 10px" type="text" class="form-control" id="email" name="email" value="<?= $data['users']->email ?>">
 
                 <input class="d-flex btn btn-success justify-content-center" type="submit" name="action" value="Edit" style="width: 100px" />
             </form>

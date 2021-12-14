@@ -151,8 +151,5 @@
 
         </div>
     </div>
-
-    <a href="<?= BASE ?>/Cryptocurrency/addCrypto">Add Crypto</a>
-    <a href="<?= BASE ?>/User/logout">Logout</a>
 </body>
 </html>

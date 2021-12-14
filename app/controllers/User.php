@@ -37,7 +37,7 @@ class User extends \app\core\Controller
 			$user->dob = $_POST['dob'];
 			$user->email = $_POST['email'];
 			$user->update();
-			header('Location:' . BASE . '/user/editPersonalInfo');
+			header('Location:' . BASE . '/User/editPersonalInfo');
 		} else {
 			$cryptoModel = new \app\models\Cryptocurrency();
 			$cryptos = $cryptoModel->getAllCurrencies();

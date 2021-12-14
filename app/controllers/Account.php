@@ -129,6 +129,20 @@ class Account extends \app\core\Controller
     //method to remove funds from account
     public function removeFunds()
     {
+        $cryptoModel = new \app\models\Cryptocurrency();
+        $cryptos = $cryptoModel->getAllCurrencies();
+
+        $account = new \app\models\Account();
+        $account = $account->getAccountById($_SESSION['account_id']);
+
+        foreach ($cryptos as $crypto) {
+            $cryptoAPI[$crypto->code] = [
+                'name' => $crypto->name,
+                'rate' => $crypto->exchange_rate,
+                'last_refreshed' => $crypto->last_refreshed,
+                'coin_logo_path' => $crypto->coin_logo_path
+            ];
+        }
         if (isset($_POST['action'])) {
             $amount = $_POST['amount'];
             $account = new \app\models\Account();
@@ -137,23 +151,9 @@ class Account extends \app\core\Controller
                 $account->removeFunds($amount);
                 header('Location:' . BASE . '/account/index');
             } else {
-                $this->view('account/removeFunds', ['error' => 'Insufficient funds']);
+                $this->view('account/removeFunds', ['error' => 'Insufficient funds', 'cryptoAPI' => $cryptoAPI, 'available_funds_CAD' => $account->available_funds_CAD]);
             }
         } else {
-            $cryptoModel = new \app\models\Cryptocurrency();
-            $cryptos = $cryptoModel->getAllCurrencies();
-
-            $account = new \app\models\Account();
-            $account = $account->getAccountById($_SESSION['account_id']);
-
-            foreach ($cryptos as $crypto) {
-                $cryptoAPI[$crypto->code] = [
-                    'name' => $crypto->name,
-                    'rate' => $crypto->exchange_rate,
-                    'last_refreshed' => $crypto->last_refreshed,
-                    'coin_logo_path' => $crypto->coin_logo_path
-                ];
-            }
             $this->view('Account/removeFunds', ['cryptoAPI' => $cryptoAPI, 'available_funds_CAD' => $account->available_funds_CAD]);
         }
     }
